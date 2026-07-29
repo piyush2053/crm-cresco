@@ -43,7 +43,7 @@ export default function Topbar({ title, onMenuClick }) {
               PS
             </div>
             <span className="text-sm font-medium hidden md:block">
-              Piyush Sharma
+              Sourav Dhoti
             </span>
             <ChevronDown className="w-3.5 h-3.5 text-muted-foreground hidden md:block" />
           </button>

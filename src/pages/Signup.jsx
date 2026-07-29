@@ -37,7 +37,7 @@ export default function Signup() {
                   <User className="w-4 h-4 text-muted-foreground absolute left-3 top-1/2 -translate-y-1/2" />
                   <input
                     type="text"
-                    placeholder="Piyush Sharma"
+                    placeholder="Piyush Patel"
                     className="w-full h-11 rounded-md border border-input bg-white pl-10 pr-3 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/30 focus:border-ring transition"
                   />
                 </div>
