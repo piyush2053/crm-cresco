@@ -1,12 +1,14 @@
 import { NavLink } from "react-router-dom";
 import {
   LayoutGrid,
-  Users,
   Inbox,
   Building2,
+  BarChart3,
+  Users,
   Handshake,
   FlaskConical,
-  BarChart3,
+  CalendarCheck,
+  Landmark,
   Settings,
   X,
 } from "lucide-react";
@@ -21,22 +23,25 @@ const NAV_SECTIONS = [
   {
     label: "Pipeline",
     items: [
-      { to: "/enquiries", label: "Enquiries", icon: Inbox },
       { to: "/leads", label: "Leads", icon: Users },
+      { to: "/enquiries", label: "Enquiries", icon: Inbox },
       { to: "/deals", label: "Deals", icon: Handshake },
+      { to: "/quotations", label: "Quotations", icon: Handshake },
+      { to: "/followups", label: "Follow-ups", icon: CalendarCheck },
     ],
   },
   {
     label: "Directory",
     items: [
       { to: "/clients", label: "Clients", icon: Building2 },
-      { to: "/vendors", label: "Vendors", icon: Building2 },
-      { to: "/products", label: "Chemicals", icon: FlaskConical },
+      { to: "/vendors", label: "Suppliers", icon: Building2 },
+      { to: "/chemicals", label: "Chemicals", icon: FlaskConical },
     ],
   },
   {
     label: "Insights",
     items: [
+      { to: "/finance", label: "Finance", icon: Landmark },
       { to: "/reports", label: "Reports", icon: BarChart3 },
       { to: "/settings", label: "Settings", icon: Settings },
     ],

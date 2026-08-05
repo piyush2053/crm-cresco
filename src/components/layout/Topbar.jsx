@@ -1,8 +1,32 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Menu, Search, Bell, ChevronDown, LogOut, User } from "lucide-react";
 
 export default function Topbar({ title, onMenuClick }) {
   const [menuOpen, setMenuOpen] = useState(false);
+  const navigate = useNavigate();
+  const user = JSON.parse(localStorage.getItem("user") || "{}");
+  const initials = (user.name || "User").split(" ").map((part) => part[0]).slice(0, 2).join("").toUpperCase();
+
+  async function handleSignOut() {
+    const refreshToken = localStorage.getItem("refreshToken");
+
+    try {
+      if (refreshToken) {
+        await fetch(`${import.meta.env.VITE_API_URL || "http://localhost:3000/api"}/auth/logout`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ refreshToken }),
+        });
+      }
+    } finally {
+      localStorage.removeItem("token");
+      localStorage.removeItem("refreshToken");
+      localStorage.removeItem("user");
+      sessionStorage.clear();
+      navigate("/login", { replace: true });
+    }
+  }
 
   return (
     <header className="h-16 shrink-0 bg-white border-b border-border flex items-center gap-4 px-4 lg:px-6">
@@ -40,10 +64,10 @@ export default function Topbar({ title, onMenuClick }) {
             className="flex items-center gap-2 pl-2 pr-2.5 h-9 rounded-md hover:bg-card transition"
           >
             <div className="w-7 h-7 rounded-full bg-secondary text-secondary-foreground grid place-items-center text-xs font-cta font-semibold">
-              PS
+              {initials}
             </div>
             <span className="text-sm font-medium hidden md:block">
-              Sourav Dhoti
+              {user.name || "User"}
             </span>
             <ChevronDown className="w-3.5 h-3.5 text-muted-foreground hidden md:block" />
           </button>
@@ -58,7 +82,11 @@ export default function Topbar({ title, onMenuClick }) {
                 <button className="w-full flex items-center gap-2 px-3 py-2 text-sm text-foreground/80 hover:bg-card">
                   <User className="w-4 h-4" /> Profile
                 </button>
-                <button className="w-full flex items-center gap-2 px-3 py-2 text-sm text-error hover:bg-error/5">
+                <button
+                  type="button"
+                  onClick={handleSignOut}
+                  className="w-full flex items-center gap-2 px-3 py-2 text-sm text-error hover:bg-error/5"
+                >
                   <LogOut className="w-4 h-4" /> Sign out
                 </button>
               </div>

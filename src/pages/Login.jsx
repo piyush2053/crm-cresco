@@ -1,11 +1,34 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Mail, Lock, Eye, EyeOff, ArrowRight } from "lucide-react";
 import logoFull from "../assets/logo-full.png";
 import AuthShowcase from "../components/layout/AuthShowcase";
+import { api } from "../lib/api";
+import { useToast } from "../components/toast";
 
 export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+  const location = useLocation();
+  const toast = useToast();
+
+  async function handleSubmit(event) {
+    event.preventDefault();
+    setLoading(true);
+    try {
+      const result = await api("/auth/login", { method: "POST", body: JSON.stringify({ email, password }) });
+      localStorage.setItem("token", result.token);
+      localStorage.setItem("refreshToken", result.refreshToken);
+      localStorage.setItem("user", JSON.stringify(result.user));
+      toast(`Welcome back, ${result.user.name}.`);
+      navigate(location.state?.from?.pathname || "/dashboard", { replace: true });
+    } catch (error) {
+      toast(error.message, "error");
+    } finally { setLoading(false); }
+  }
 
   return (
     <div className="min-h-screen flex bg-background">
@@ -27,7 +50,7 @@ export default function Login() {
             Sign in to your CRM to pick up where you left off.
           </p>
 
-          <form className="mt-8 space-y-4">
+          <form onSubmit={handleSubmit} className="mt-8 space-y-4">
             <div>
               <label className="block text-sm font-medium text-foreground/80 mb-1.5">
                 Work email
@@ -36,6 +59,9 @@ export default function Login() {
                 <Mail className="w-4 h-4 text-muted-foreground absolute left-3 top-1/2 -translate-y-1/2" />
                 <input
                   type="email"
+                  value={email}
+                  onChange={(event) => setEmail(event.target.value)}
+                  required
                   placeholder="you@crescoglobal.co.in"
                   className="w-full h-11 rounded-md border border-input bg-white pl-10 pr-3 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/30 focus:border-ring transition"
                 />
@@ -58,6 +84,9 @@ export default function Login() {
                 <Lock className="w-4 h-4 text-muted-foreground absolute left-3 top-1/2 -translate-y-1/2" />
                 <input
                   type={showPassword ? "text" : "password"}
+                  value={password}
+                  onChange={(event) => setPassword(event.target.value)}
+                  required
                   placeholder="••••••••"
                   className="w-full h-11 rounded-md border border-input bg-white pl-10 pr-10 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/30 focus:border-ring transition"
                 />
@@ -85,18 +114,14 @@ export default function Login() {
 
             <button
               type="submit"
+              disabled={loading}
               className="w-full h-11 rounded-md bg-primary text-primary-foreground font-cta font-medium text-sm flex items-center justify-center gap-2 hover:opacity-90 transition shadow-card"
             >
-              Sign in <ArrowRight className="w-4 h-4" />
+              {loading ? "Signing in..." : "Sign in"} <ArrowRight className="w-4 h-4" />
             </button>
           </form>
 
-          <p className="text-sm text-muted-foreground text-center mt-6">
-            New to Cresco Global CRM?{" "}
-            <Link to="/signup" className="text-secondary font-medium hover:underline">
-              Create an account
-            </Link>
-          </p>
+          <p className="text-sm text-muted-foreground text-center mt-6">Contact your administrator to create an account.</p>
         </div>
       </div>
     </div>

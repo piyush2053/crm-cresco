@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import {
   Inbox,
   Handshake,
@@ -9,6 +10,8 @@ import {
   UserPlus,
 } from "lucide-react";
 import DashboardLayout from "../components/layout/DashboardLayout";
+import { api } from "../lib/api";
+import { useToast } from "../components/toast";
 
 const STATS = [
   {
@@ -94,6 +97,12 @@ const QUICK_ACTIONS = [
 ];
 
 export default function Dashboard() {
+  const [stats, setStats] = useState(null);
+  const toast = useToast();
+  // The dashboard only needs an initial snapshot; mutations refresh their own screens.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => { api("/reports/dashboard").then(setStats).catch((error) => toast(error.message, "error")); }, []);
+  const statValues = stats ? [stats.totalEnquiries, stats.activeDeals, stats.totalVendors, "—"] : STATS.map(() => "…");
   return (
     <DashboardLayout title="Dashboard">
       <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
@@ -112,7 +121,7 @@ export default function Dashboard() {
 
       {/* Stat cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 mb-6">
-        {STATS.map(({ label, value, delta, icon: Icon, tone }) => (
+        {STATS.map(({ label, delta, icon: Icon, tone }, index) => (
           <div
             key={label}
             className="bg-card border border-border rounded-lg p-4 shadow-card"
@@ -129,7 +138,7 @@ export default function Dashboard() {
               </div>
             </div>
             <p className="mt-3 font-headline text-2xl font-bold text-foreground">
-              {value}
+              {statValues[index]}
             </p>
             <p className="text-sm text-muted-foreground mt-0.5">{label}</p>
             <p className="text-xs text-success mt-2 flex items-center gap-1">
