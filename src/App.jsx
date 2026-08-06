@@ -27,6 +27,7 @@ export default function App() {
         <Route path="/orders" element={secure(<Orders />)} />
         <Route path="/reports" element={secure(<Reports />)} />
         <Route path="/settings" element={secure(<Settings />)} />
+        <Route path="/settings/:section" element={secure(<Settings />)} />
         <Route path="/finance" element={secure(<Finance />)} />
         <Route path="*" element={<Navigate to="/dashboard" replace />} />
       </Routes>
