@@ -46,7 +46,7 @@ export default function Topbar({ title, onMenuClick }) {
           <Search className="w-4 h-4 text-muted-foreground absolute left-3 top-1/2 -translate-y-1/2" />
           <input
             type="text"
-            placeholder="Search leads, clients, enquiries..."
+            placeholder="Search leads, buyers, enquiries..."
             className="w-full h-9 rounded-md bg-card border border-border pl-9 pr-3 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/30 focus:border-ring transition"
           />
         </div>

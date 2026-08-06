@@ -92,7 +92,7 @@ const STATUS_STYLES = {
 
 const QUICK_ACTIONS = [
   { label: "New Enquiry", icon: Plus },
-  { label: "Add Client", icon: UserPlus },
+  { label: "Add Buyer", icon: UserPlus },
   { label: "Generate Quote", icon: FileText },
 ];
 

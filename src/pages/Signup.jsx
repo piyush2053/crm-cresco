@@ -12,7 +12,7 @@ export default function Signup() {
       <AuthShowcase
         eyebrow="Cresco Global · Trade Desk"
         heading="Bring your whole trade desk onto one platform."
-        sub="Set up your team's workspace to manage enquiries, vendors and deals across every chemical you import, export and trade."
+        sub="Set up your team's workspace to manage enquiries, suppliers and deals across every chemical you import, export and trade."
       />
 
       {/* Form panel */}

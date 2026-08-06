@@ -9,6 +9,7 @@ import {
   FlaskConical,
   CalendarCheck,
   Landmark,
+  Truck,
   Settings,
   X,
 } from "lucide-react";
@@ -33,8 +34,9 @@ const NAV_SECTIONS = [
   {
     label: "Directory",
     items: [
-      { to: "/clients", label: "Clients", icon: Building2 },
-      { to: "/vendors", label: "Suppliers", icon: Building2 },
+      { to: "/buyers", label: "Buyers", icon: Building2 },
+      { to: "/suppliers", label: "Suppliers", icon: Building2 },
+      { to: "/logistics", label: "Logistics", icon: Truck },
       { to: "/chemicals", label: "Chemicals", icon: FlaskConical },
     ],
   },
