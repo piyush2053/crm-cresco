@@ -42,3 +42,174 @@
     background-color: #d98a3d !important;
   }
 }
+
+/* Cresco form-control system: removes browser-native visual chrome globally. */
+input:not([type="hidden"]):not([type="checkbox"]):not([type="radio"]),
+textarea,
+select {
+  border: 1px solid #d7e0e5 !important;
+  border-radius: 0.625rem !important;
+  background-color: #ffffff !important;
+  color: #123b46 !important;
+  font-family: inherit;
+  box-shadow: 0 1px 2px rgba(15, 76, 92, 0.035);
+  transition: border-color 160ms ease, box-shadow 160ms ease, background-color 160ms ease;
+}
+
+input:not([type="hidden"]):not([type="checkbox"]):not([type="radio"]):hover,
+textarea:hover,
+select:hover {
+  border-color: #93aeb7 !important;
+}
+
+input:not([type="hidden"]):not([type="checkbox"]):not([type="radio"]):focus,
+textarea:focus,
+select:focus {
+  border-color: #0f4c5c !important;
+  outline: none !important;
+  box-shadow: 0 0 0 3px rgba(15, 76, 92, 0.13) !important;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: #80949b !important;
+  opacity: 1;
+}
+
+input:disabled,
+textarea:disabled,
+select:disabled {
+  cursor: not-allowed !important;
+  border-color: #e2e8eb !important;
+  background-color: #f3f6f7 !important;
+  color: #8a9ba1 !important;
+  opacity: 1 !important;
+}
+
+select {
+  appearance: none !important;
+  -webkit-appearance: none !important;
+  cursor: pointer;
+  padding-right: 2.5rem !important;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 24 24' fill='none' stroke='%230f4c5c' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") !important;
+  background-position: right 0.7rem center !important;
+  background-repeat: no-repeat !important;
+  background-size: 1rem !important;
+}
+
+select option {
+  background: #ffffff;
+  color: #123b46;
+}
+
+input[type="checkbox"],
+input[type="radio"] {
+  appearance: none;
+  -webkit-appearance: none;
+  display: inline-grid;
+  width: 1.125rem;
+  height: 1.125rem;
+  flex: 0 0 1.125rem;
+  cursor: pointer;
+  place-content: center;
+  border: 1.5px solid #9cb0b7;
+  background: #ffffff;
+  transition: background-color 140ms ease, border-color 140ms ease, box-shadow 140ms ease, transform 100ms ease;
+}
+
+input[type="checkbox"] {
+  border-radius: 0.32rem;
+}
+
+input[type="radio"] {
+  border-radius: 999px;
+}
+
+input[type="checkbox"]::before {
+  width: 0.65rem;
+  height: 0.65rem;
+  content: "";
+  clip-path: polygon(14% 44%, 0 59%, 40% 100%, 100% 18%, 84% 4%, 39% 72%);
+  background: #ffffff;
+  transform: scale(0);
+  transition: transform 120ms ease;
+}
+
+input[type="radio"]::before {
+  width: 0.48rem;
+  height: 0.48rem;
+  content: "";
+  border-radius: 999px;
+  background: #ffffff;
+  transform: scale(0);
+  transition: transform 120ms ease;
+}
+
+input[type="checkbox"]:checked,
+input[type="radio"]:checked {
+  border-color: #d96f08;
+  background: #d96f08;
+}
+
+input[type="checkbox"]:checked::before,
+input[type="radio"]:checked::before {
+  transform: scale(1);
+}
+
+input[type="checkbox"]:focus-visible,
+input[type="radio"]:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(217, 111, 8, 0.18);
+}
+
+input[type="checkbox"]:active,
+input[type="radio"]:active {
+  transform: scale(0.92);
+}
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  margin: 0;
+  appearance: none;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+input[type="date"],
+input[type="time"],
+input[type="datetime-local"] {
+  color-scheme: light;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator,
+input[type="time"]::-webkit-calendar-picker-indicator,
+input[type="datetime-local"]::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+  opacity: 0.62;
+  filter: sepia(1) saturate(2.5) hue-rotate(345deg);
+}
+
+input[type="file"] {
+  padding: 0.32rem !important;
+}
+
+input[type="file"]::file-selector-button {
+  margin-right: 0.75rem;
+  cursor: pointer;
+  border: 0;
+  border-radius: 0.45rem;
+  background: #0f4c5c;
+  padding: 0.48rem 0.8rem;
+  color: #ffffff;
+  font-weight: 600;
+}
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus {
+  -webkit-text-fill-color: #123b46;
+  box-shadow: 0 0 0 1000px #ffffff inset !important;
+  transition: background-color 9999s ease-out;
+}
