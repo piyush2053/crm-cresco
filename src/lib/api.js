@@ -1,7 +1,7 @@
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:4000/api";
 let lastOfflineAlert=0;
 function backendOffline(){const now=Date.now();if(now-lastOfflineAlert>5000){lastOfflineAlert=now;window.dispatchEvent(new CustomEvent("crm:api-offline",{detail:{message:"CRM backend server is unavailable. Please start the API server on port 4000."}}))}}
-async function request(url,options){try{return await fetch(url,options)}catch{backendOffline();throw new ApiError("Backend server unavailable. Please try again after the API starts.",0)}}
+async function request(url,options){try{return await fetch(url,options)}catch(error){if(error?.name==="AbortError")throw error;backendOffline();throw new ApiError("Backend server unavailable. Please try again after the API starts.",0)}}
 
 export class ApiError extends Error {
   constructor(message, status) {

@@ -1,19 +1,26 @@
 /* eslint-disable react-hooks/set-state-in-effect */
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Menu, Search, Bell, ChevronDown, LogOut, User } from "lucide-react";
+import { Menu, Search, Bell, ChevronDown, LoaderCircle, LogOut, User } from "lucide-react";
 import { api } from "../../lib/api";
+
+const sourceLabel={Buyer:"Buyer Directory",Supplier:"Supplier Directory",Order:"Orders",Inquiry:"Sales Inquiries",Commercial:"Finance Commercial Register","Logistics Lane":"Logistics Directory",User:"User Directory","Master Data":"Settings Master Data",Report:"Reports Library"};
 
 export default function Topbar({ title, onMenuClick }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [notificationsOpen,setNotificationsOpen]=useState(false);
   const [notifications,setNotifications]=useState([]);
   const [unread,setUnread]=useState(0);
+  const [search,setSearch]=useState("");
+  const [searchResults,setSearchResults]=useState([]);
+  const [searching,setSearching]=useState(false);
+  const [searchOpen,setSearchOpen]=useState(false);
   const navigate = useNavigate();
   const user = JSON.parse(localStorage.getItem("user") || "{}");
   const initials = (user.name || "User").split(" ").map((part) => part[0]).slice(0, 2).join("").toUpperCase();
   async function loadNotifications(){try{const result=await api("/notifications");setNotifications(result.data);setUnread(result.unread)}catch{/* Auth refresh/logout handles unavailable sessions. */}}
   useEffect(()=>{loadNotifications();const timer=setInterval(loadNotifications,60000);return()=>clearInterval(timer)},[]);
+  useEffect(()=>{const term=search.trim();if(term.length<2){setSearchResults([]);setSearching(false);return}const controller=new AbortController(),timer=setTimeout(async()=>{setSearching(true);try{const rows=await api(`/search?q=${encodeURIComponent(term)}&limit=5`,{signal:controller.signal});setSearchResults(rows);setSearchOpen(true)}catch(e){if(e.name!=="AbortError")setSearchResults([])}finally{if(!controller.signal.aborted)setSearching(false)}},250);return()=>{clearTimeout(timer);controller.abort()}},[search]);
   async function openNotification(item){if(!item.is_read){await api(`/notifications/${item.id}/read`,{method:"PUT"});setUnread(Math.max(0,unread-1))}setNotificationsOpen(false);if(item.link)navigate(item.link)}
   async function readAll(){await api("/notifications/read-all",{method:"PUT"});setNotifications(notifications.map(n=>({...n,is_read:true})));setUnread(0)}
 
@@ -55,9 +62,15 @@ export default function Topbar({ title, onMenuClick }) {
           <Search className="w-4 h-4 text-muted-foreground absolute left-3 top-1/2 -translate-y-1/2" />
           <input
             type="text"
-            placeholder="Search leads, buyers, enquiries..."
+            value={search}
+            onChange={e=>{setSearch(e.target.value);setSearchOpen(true)}}
+            onFocus={()=>search.trim().length>=2&&setSearchOpen(true)}
+            onKeyDown={e=>{if(e.key==="Escape")setSearchOpen(false);if(e.key==="Enter"&&searchResults[0]){navigate(searchResults[0].path);setSearchOpen(false)}}}
+            placeholder="Search buyers, orders, invoices, users..."
             className="w-full h-9 rounded-md bg-card border border-border pl-9 pr-3 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/30 focus:border-ring transition"
           />
+          {searching&&<LoaderCircle className="absolute right-3 top-2.5 h-4 w-4 animate-spin text-accent"/>}
+          {searchOpen&&search.trim().length>=2&&<><button aria-label="Close search" className="fixed inset-0 z-20 cursor-default" onClick={()=>setSearchOpen(false)}/><div className="absolute left-0 right-0 top-11 z-40 max-h-[70vh] overflow-y-auto rounded-xl border bg-white p-2 shadow-elevated">{searchResults.length?searchResults.map((item,index)=><button key={`${item.type}-${item.id}-${index}`} onClick={()=>{navigate(item.path);setSearchOpen(false);setSearch("")}} className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left hover:bg-card"><span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-accent/10 text-xs font-bold text-accent">{item.type.slice(0,2).toUpperCase()}</span><span className="min-w-0 flex-1"><span className="mb-0.5 block text-[10px] font-semibold uppercase tracking-wide text-accent">From {sourceLabel[item.type]||item.type}</span><span className="block truncate text-sm font-medium">{item.title}</span><span className="block truncate text-xs text-muted-foreground">{item.subtitle||item.type}</span></span><span className="rounded-full bg-card px-2 py-1 text-[10px] text-muted-foreground">{item.type}</span></button>):!searching&&<div className="p-8 text-center"><Search className="mx-auto mb-2 h-6 w-6 text-muted-foreground"/><p className="text-sm font-medium">No CRM records found</p><p className="text-xs text-muted-foreground">Try a buyer, order, invoice, user or reference number.</p></div>}</div></>}
         </div>
       </div>
 
