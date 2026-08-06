@@ -4,7 +4,6 @@ import Signup from "./pages/Signup";
 import Dashboard from "./pages/Dashboard";
 import Clients from "./pages/Clients";
 import Vendors from "./pages/Vendors";
-import Enquiries from "./pages/Enquiries";
 import Reports from "./pages/Reports";
 import Settings from "./pages/Settings";
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -24,10 +23,9 @@ export default function App() {
         <Route path="/buyers" element={secure(<Clients />)} />
         <Route path="/suppliers" element={secure(<Vendors />)} />
         <Route path="/logistics" element={secure(<Logistics />)} />
-        <Route path="/enquiries" element={secure(<Enquiries />)} />
         <Route path="/reports" element={secure(<Reports />)} />
         <Route path="/settings" element={secure(<Settings />)} />
-        {['leads', 'deals', 'chemicals', 'quotations', 'finance', 'followups'].map((name) => <Route key={name} path={`/${name}`} element={secure(<Module name={name} />)} />)}
+        {['finance', 'orders'].map((name) => <Route key={name} path={`/${name}`} element={secure(<Module name={name} />)} />)}
         <Route path="*" element={<Navigate to="/dashboard" replace />} />
       </Routes>
     </BrowserRouter>

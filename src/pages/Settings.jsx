@@ -5,7 +5,7 @@ import { api } from "../lib/api";
 import { useToast } from "../components/toast";
 import { SelectField, ToggleField } from "../components/FormControls";
 
-const MODULES = ["dashboard", "buyers", "suppliers", "logistics", "leads", "enquiries", "deals", "quotations", "followups", "chemicals", "finance", "reports", "settings", "users", "roles", "uploads"];
+const MODULES = ["dashboard", "buyers", "suppliers", "finance", "logistics", "orders", "reports", "settings", "users", "roles", "uploads"];
 const ACTIONS = ["read", "create", "update", "delete"];
 const emptyPermissions = () => ({ modules: Object.fromEntries(MODULES.map((item) => [item, false])), actions: Object.fromEntries(ACTIONS.map((item) => [item, false])) });
 

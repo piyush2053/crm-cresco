@@ -1,13 +1,8 @@
 import { NavLink } from "react-router-dom";
 import {
   LayoutGrid,
-  Inbox,
   Building2,
   BarChart3,
-  Users,
-  Handshake,
-  FlaskConical,
-  CalendarCheck,
   Landmark,
   Truck,
   Settings,
@@ -22,28 +17,13 @@ const NAV_SECTIONS = [
     items: [{ to: "/dashboard", label: "Dashboard", icon: LayoutGrid }],
   },
   {
-    label: "Pipeline",
-    items: [
-      { to: "/leads", label: "Leads", icon: Users },
-      { to: "/enquiries", label: "Enquiries", icon: Inbox },
-      { to: "/deals", label: "Deals", icon: Handshake },
-      { to: "/quotations", label: "Quotations", icon: Handshake },
-      { to: "/followups", label: "Follow-ups", icon: CalendarCheck },
-    ],
-  },
-  {
     label: "Directory",
     items: [
       { to: "/buyers", label: "Buyers", icon: Building2 },
       { to: "/suppliers", label: "Suppliers", icon: Building2 },
-      { to: "/logistics", label: "Logistics", icon: Truck },
-      { to: "/chemicals", label: "Chemicals", icon: FlaskConical },
-    ],
-  },
-  {
-    label: "Insights",
-    items: [
       { to: "/finance", label: "Finance", icon: Landmark },
+      { to: "/logistics", label: "Logistics", icon: Truck },
+      { to: "/orders", label: "Orders", icon: LayoutGrid },
       { to: "/reports", label: "Reports", icon: BarChart3 },
       { to: "/settings", label: "Settings", icon: Settings },
     ],
