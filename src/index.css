@@ -29,3 +29,16 @@
     background: transparent;
   }
 }
+
+@layer components {
+  button.bg-accent {
+    background-color: #d96f08 !important;
+    color: #ffffff !important;
+  }
+  button.bg-accent:hover {
+    background-color: #bd5f05 !important;
+  }
+  button.bg-accent:disabled {
+    background-color: #d98a3d !important;
+  }
+}

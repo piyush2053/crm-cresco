@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Menu, Search, Bell, ChevronDown, LoaderCircle, LogOut, User } from "lucide-react";
 import { api } from "../../lib/api";
+import { useToast } from "../toast";
 
 const sourceLabel={Buyer:"Buyer Directory",Supplier:"Supplier Directory",Order:"Orders",Inquiry:"Sales Inquiries",Commercial:"Finance Commercial Register","Logistics Lane":"Logistics Directory",User:"User Directory","Master Data":"Settings Master Data",Report:"Reports Library"};
 
@@ -16,6 +17,7 @@ export default function Topbar({ title, onMenuClick }) {
   const [searching,setSearching]=useState(false);
   const [searchOpen,setSearchOpen]=useState(false);
   const navigate = useNavigate();
+  const toast=useToast();
   const user = JSON.parse(localStorage.getItem("user") || "{}");
   const initials = (user.name || "User").split(" ").map((part) => part[0]).slice(0, 2).join("").toUpperCase();
   async function loadNotifications(){try{const result=await api("/notifications");setNotifications(result.data);setUnread(result.unread)}catch{/* Auth refresh/logout handles unavailable sessions. */}}
@@ -23,6 +25,7 @@ export default function Topbar({ title, onMenuClick }) {
   useEffect(()=>{const term=search.trim();if(term.length<2){setSearchResults([]);setSearching(false);return}const controller=new AbortController(),timer=setTimeout(async()=>{setSearching(true);try{const rows=await api(`/search?q=${encodeURIComponent(term)}&limit=5`,{signal:controller.signal});setSearchResults(rows);setSearchOpen(true)}catch(e){if(e.name!=="AbortError")setSearchResults([])}finally{if(!controller.signal.aborted)setSearching(false)}},250);return()=>{clearTimeout(timer);controller.abort()}},[search]);
   async function openNotification(item){if(!item.is_read){await api(`/notifications/${item.id}/read`,{method:"PUT"});setUnread(Math.max(0,unread-1))}setNotificationsOpen(false);if(item.link)navigate(item.link)}
   async function readAll(){await api("/notifications/read-all",{method:"PUT"});setNotifications(notifications.map(n=>({...n,is_read:true})));setUnread(0)}
+  async function clearNotifications(){try{const result=await api("/notifications/clear",{method:"PUT"});setNotifications([]);setUnread(0);setNotificationsOpen(false);toast(result.message)}catch(error){toast(error.message,"error")}}
 
   async function handleSignOut() {
     const refreshToken = localStorage.getItem("refreshToken");
@@ -78,7 +81,7 @@ export default function Topbar({ title, onMenuClick }) {
         <div className="relative"><button onClick={()=>{setNotificationsOpen(v=>!v);setMenuOpen(false);if(!notificationsOpen)loadNotifications()}} className="relative w-9 h-9 grid place-items-center rounded-md hover:bg-card text-foreground/60 hover:text-foreground transition">
           <Bell className="w-[18px] h-[18px]" />
           {unread>0&&<span className="absolute -right-1 -top-1 grid min-w-5 h-5 place-items-center rounded-full bg-accent px-1 text-[10px] font-bold text-accent-foreground">{unread>99?"99+":unread}</span>}
-        </button>{notificationsOpen&&<><div className="fixed inset-0 z-10" onClick={()=>setNotificationsOpen(false)}/><div className="absolute right-0 z-30 mt-2 w-[min(24rem,calc(100vw-2rem))] overflow-hidden rounded-lg border bg-white shadow-elevated"><div className="flex items-center justify-between border-b p-3"><div><p className="font-semibold">Notifications</p><p className="text-xs text-muted-foreground">{unread} unread</p></div>{unread>0&&<button onClick={readAll} className="text-xs font-medium text-secondary">Mark all read</button>}</div><div className="max-h-96 overflow-y-auto">{notifications.length?notifications.map(n=><button key={n.id} onClick={()=>openNotification(n)} className={`block w-full border-b p-3 text-left hover:bg-card ${n.is_read?"opacity-65":"bg-accent/5"}`}><div className="flex justify-between gap-3"><p className="text-sm font-medium">{n.title}</p>{!n.is_read&&<span className="mt-1 h-2 w-2 shrink-0 rounded-full bg-accent"/>}</div><p className="mt-1 text-xs text-muted-foreground">{n.message}</p><p className="mt-1 text-[10px] text-muted-foreground">{new Date(n.created_at).toLocaleString()}</p></button>):<p className="p-8 text-center text-sm text-muted-foreground">No notifications yet.</p>}</div></div></>}</div>
+        </button>{notificationsOpen&&<><div className="fixed inset-0 z-10" onClick={()=>setNotificationsOpen(false)}/><div className="absolute right-0 z-30 mt-2 w-[min(24rem,calc(100vw-2rem))] overflow-hidden rounded-lg border bg-white shadow-elevated"><div className="flex items-center justify-between border-b p-3"><div><p className="font-semibold">Notifications</p><p className="text-xs text-muted-foreground">{unread} unread</p></div><div className="flex items-center gap-3">{unread>0&&<button onClick={readAll} className="text-xs font-medium text-secondary">Mark all read</button>}{notifications.length>0&&<button onClick={clearNotifications} className="text-xs font-medium text-error">Clear</button>}</div></div><div className="max-h-96 overflow-y-auto">{notifications.length?notifications.map(n=><button key={n.id} onClick={()=>openNotification(n)} className={`block w-full border-b p-3 text-left hover:bg-card ${n.is_read?"opacity-65":"bg-accent/5"}`}><div className="flex justify-between gap-3"><p className="text-sm font-medium">{n.title}</p>{!n.is_read&&<span className="mt-1 h-2 w-2 shrink-0 rounded-full bg-accent"/>}</div><p className="mt-1 text-xs text-muted-foreground">{n.message}</p><p className="mt-1 text-[10px] text-muted-foreground">{new Date(n.created_at).toLocaleString()}</p></button>):<p className="p-8 text-center text-sm text-muted-foreground">No notifications yet.</p>}</div></div></>}</div>
 
         <div className="relative">
           <button
