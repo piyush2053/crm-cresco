@@ -1,4 +1,4 @@
-import { CalendarDays, Check, ChevronDown } from "lucide-react";
+import { CalendarDays, Check, ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
 export function SelectField({ name, value, defaultValue = "", onChange, options = [], placeholder = "Select an option", required = false, disabled = false, className = "" }) {
@@ -29,6 +29,57 @@ export function SelectField({ name, value, defaultValue = "", onChange, options 
 
 export function DateField({ value, onChange, required = false }) {
   return <div className="relative"><input required={required} type="date" value={value ?? ""} onChange={(event) => onChange(event.target.value)} className="h-10 w-full rounded-md border border-input bg-white px-3 pr-10 text-sm transition focus:outline-none focus:ring-2 focus:ring-primary/20" /><CalendarDays className="pointer-events-none absolute right-3 top-3 w-4 text-secondary" /></div>;
+}
+
+const isoDate = date => `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+const readDate = value => { const [year, month, day] = value.split("-").map(Number); return new Date(year, month - 1, day); };
+const prettyDate = value => value ? readDate(value).toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" }) : "";
+
+export function DateRangeField({ start, end, onChange, className = "" }) {
+  const initial = start ? readDate(start) : new Date();
+  const [open, setOpen] = useState(false);
+  const [view, setView] = useState(new Date(initial.getFullYear(), initial.getMonth(), 1));
+  const [pickingEnd, setPickingEnd] = useState(false);
+  const root = useRef(null);
+  useEffect(() => {
+    const close = event => { if (!root.current?.contains(event.target)) setOpen(false); };
+    document.addEventListener("mousedown", close);
+    return () => document.removeEventListener("mousedown", close);
+  }, []);
+  const days = [];
+  const firstWeekday = new Date(view.getFullYear(), view.getMonth(), 1).getDay();
+  const count = new Date(view.getFullYear(), view.getMonth() + 1, 0).getDate();
+  for (let index = 0; index < firstWeekday; index += 1) days.push(null);
+  for (let day = 1; day <= count; day += 1) days.push(new Date(view.getFullYear(), view.getMonth(), day));
+  function select(date) {
+    const value = isoDate(date);
+    if (!pickingEnd) {
+      onChange(value, "");
+      setPickingEnd(true);
+      return;
+    }
+    const nextStart = value < start ? value : start;
+    const nextEnd = value < start ? start : value;
+    onChange(nextStart, nextEnd);
+    setPickingEnd(false);
+    setOpen(false);
+  }
+  const previous = () => setView(new Date(view.getFullYear(), view.getMonth() - 1, 1));
+  const next = () => setView(new Date(view.getFullYear(), view.getMonth() + 1, 1));
+  return <div ref={root} className={`relative ${className}`}>
+    <button type="button" onClick={() => setOpen(value => !value)} aria-expanded={open} className="flex h-10 w-full items-center justify-between rounded-md border border-input bg-white px-3 text-left text-sm transition hover:border-secondary focus:outline-none focus:ring-2 focus:ring-primary/20">
+      <span className={start ? "text-foreground" : "text-muted-foreground"}>{start ? `${prettyDate(start)}${end ? `  →  ${prettyDate(end)}` : "  →  Select end date"}` : "Select date range"}</span><CalendarDays className="w-4 text-secondary" />
+    </button>
+    {open && <div className="absolute left-0 z-40 mt-1 w-[min(22rem,calc(100vw-2rem))] rounded-xl border border-border bg-white p-4 shadow-elevated">
+      <div className="mb-3 flex items-center justify-between"><button type="button" onClick={previous} className="grid h-8 w-8 place-items-center rounded-lg hover:bg-card"><ChevronLeft className="w-4" /></button><b className="text-sm">{view.toLocaleDateString("en-IN", { month: "long", year: "numeric" })}</b><button type="button" onClick={next} className="grid h-8 w-8 place-items-center rounded-lg hover:bg-card"><ChevronRight className="w-4" /></button></div>
+      <div className="grid grid-cols-7 text-center">{["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"].map(day => <span key={day} className="py-2 text-[11px] font-semibold text-muted-foreground">{day}</span>)}{days.map((date, index) => {
+        if (!date) return <span key={`blank-${index}`} />;
+        const value = isoDate(date), edge = value === start || value === end, within = start && end && value > start && value < end, today = value === isoDate(new Date());
+        return <button type="button" key={value} onClick={() => select(date)} className={`h-9 text-xs transition ${edge ? "rounded-lg bg-primary font-semibold text-white" : within ? "bg-primary/10 text-primary" : "rounded-lg hover:bg-card"} ${today && !edge ? "font-bold ring-1 ring-inset ring-accent" : ""}`}>{date.getDate()}</button>;
+      })}</div>
+      <div className="mt-3 flex items-center justify-between border-t pt-3"><p className="text-xs text-muted-foreground">{pickingEnd ? "Select end date" : "Select start date"}</p><button type="button" onClick={() => { const today = new Date(), value = isoDate(today); setView(new Date(today.getFullYear(), today.getMonth(), 1)); onChange(value, value); setPickingEnd(false); setOpen(false); }} className="text-xs font-medium text-secondary">Today</button></div>
+    </div>}
+  </div>;
 }
 
 export function ToggleField({ name, defaultChecked = false, label }) {

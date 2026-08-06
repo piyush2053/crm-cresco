@@ -11,6 +11,7 @@ import Logistics from "./pages/Logistics";
 import Orders from "./pages/Orders";
 import Finance from "./pages/Finance";
 import Profile from "./pages/Profile";
+import Monitoring from "./pages/Monitoring";
 
 const secure = (page) => <ProtectedRoute>{page}</ProtectedRoute>;
 
@@ -31,6 +32,7 @@ export default function App() {
         <Route path="/settings/:section" element={secure(<Settings />)} />
         <Route path="/finance" element={secure(<Finance />)} />
         <Route path="/profile" element={secure(<Profile />)} />
+        <Route path="/monitoring" element={secure(<Monitoring />)} />
         <Route path="*" element={<Navigate to="/dashboard" replace />} />
       </Routes>
     </BrowserRouter>

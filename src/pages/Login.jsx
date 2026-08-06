@@ -22,6 +22,7 @@ export default function Login() {
       const result = await api("/auth/login", { method: "POST", body: JSON.stringify({ email, password }) });
       localStorage.setItem("token", result.token);
       localStorage.setItem("refreshToken", result.refreshToken);
+      localStorage.setItem("activitySessionId", String(result.activitySessionId));
       localStorage.setItem("user", JSON.stringify(result.user));
       toast(`Welcome back, ${result.user.name}.`);
       navigate(location.state?.from?.pathname || "/dashboard", { replace: true });

@@ -35,13 +35,14 @@ export default function Topbar({ title, onMenuClick }) {
         await fetch(`${import.meta.env.VITE_API_URL || "http://localhost:4000/api"}/auth/logout`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ refreshToken }),
+          body: JSON.stringify({ refreshToken, activitySessionId: localStorage.getItem("activitySessionId") }),
         });
       }
     } finally {
       localStorage.removeItem("token");
       localStorage.removeItem("refreshToken");
       localStorage.removeItem("user");
+      localStorage.removeItem("activitySessionId");
       sessionStorage.clear();
       navigate("/login", { replace: true });
     }

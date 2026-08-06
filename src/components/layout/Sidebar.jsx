@@ -7,6 +7,7 @@ import {
   Truck,
   Settings,
   X,
+  Activity,
 } from "lucide-react";
 import logoFull from "../../assets/logo-full.png";
 import logoIcon from "../../assets/logo-icon.png";
@@ -25,12 +26,14 @@ const NAV_SECTIONS = [
       { to: "/logistics", label: "Logistics", icon: Truck },
       { to: "/orders", label: "Orders", icon: LayoutGrid },
       { to: "/reports", label: "Reports", icon: BarChart3 },
+      { to: "/monitoring", label: "Monitoring", icon: Activity, adminOnly: true },
       { to: "/settings", label: "Settings", icon: Settings },
     ],
   },
 ];
 
 export default function Sidebar({ open, onClose }) {
+  const user = JSON.parse(localStorage.getItem("user") || "{}");
   return (
     <>
       {/* mobile overlay */}
@@ -65,7 +68,7 @@ export default function Sidebar({ open, onClose }) {
                 {section.label}
               </p>
               <div className="space-y-1">
-                {section.items.map(({ to, label, icon: Icon }) => (
+                {section.items.filter(item => !item.adminOnly || user.is_admin).map(({ to, label, icon: Icon }) => (
                   <NavLink
                     key={to}
                     to={to}
@@ -108,7 +111,7 @@ export default function Sidebar({ open, onClose }) {
                 Cresco Global
               </p>
               <p className="text-[11px] text-white/40 truncate">
-                Chemical Trading CRM
+                CRM
               </p>
             </div>
           </div>
