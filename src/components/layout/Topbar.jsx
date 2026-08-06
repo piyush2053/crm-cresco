@@ -88,7 +88,7 @@ export default function Topbar({ title, onMenuClick }) {
                 onClick={() => setMenuOpen(false)}
               />
               <div className="absolute right-0 mt-2 w-48 bg-white border border-border rounded-md shadow-elevated py-1 z-20">
-                <button className="w-full flex items-center gap-2 px-3 py-2 text-sm text-foreground/80 hover:bg-card">
+                <button onClick={()=>{setMenuOpen(false);navigate("/profile")}} className="w-full flex items-center gap-2 px-3 py-2 text-sm text-foreground/80 hover:bg-card">
                   <User className="w-4 h-4" /> Profile
                 </button>
                 <button

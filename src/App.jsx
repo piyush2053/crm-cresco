@@ -10,6 +10,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import Logistics from "./pages/Logistics";
 import Orders from "./pages/Orders";
 import Finance from "./pages/Finance";
+import Profile from "./pages/Profile";
 
 const secure = (page) => <ProtectedRoute>{page}</ProtectedRoute>;
 
@@ -29,6 +30,7 @@ export default function App() {
         <Route path="/settings" element={secure(<Settings />)} />
         <Route path="/settings/:section" element={secure(<Settings />)} />
         <Route path="/finance" element={secure(<Finance />)} />
+        <Route path="/profile" element={secure(<Profile />)} />
         <Route path="*" element={<Navigate to="/dashboard" replace />} />
       </Routes>
     </BrowserRouter>
