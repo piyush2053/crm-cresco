@@ -37,9 +37,10 @@ export async function api(path, options = {}, retry = true) {
   return response.json();
 }
 
-export async function download(path, filename) {
+export async function download(path, filename, options = {}) {
   const token = localStorage.getItem("token");
-  const response = await fetch(`${API_URL}${path}`, { headers: { Authorization: `Bearer ${token}` } });
+  const headers=new Headers(options.headers);headers.set("Authorization",`Bearer ${token}`);if(options.body)headers.set("Content-Type","application/json");
+  const response = await fetch(`${API_URL}${path}`, { ...options, headers });
   if (!response.ok) throw new ApiError("Unable to generate the report.", response.status);
   const url = URL.createObjectURL(await response.blob());
   const link = document.createElement("a");
