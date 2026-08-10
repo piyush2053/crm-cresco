@@ -13,7 +13,7 @@ import Finance from "./pages/Finance";
 import Profile from "./pages/Profile";
 import Monitoring from "./pages/Monitoring";
 
-const secure = (page) => <ProtectedRoute>{page}</ProtectedRoute>;
+const secure = (page, module) => <ProtectedRoute module={module}>{page}</ProtectedRoute>;
 
 export default function App() {
   return (
@@ -22,15 +22,15 @@ export default function App() {
         <Route path="/" element={<Navigate to="/login" replace />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
-        <Route path="/dashboard" element={secure(<Dashboard />)} />
-        <Route path="/buyers" element={secure(<Clients />)} />
-        <Route path="/suppliers" element={secure(<Vendors />)} />
-        <Route path="/logistics" element={secure(<Logistics />)} />
-        <Route path="/orders" element={secure(<Orders />)} />
-        <Route path="/reports" element={secure(<Reports />)} />
-        <Route path="/settings" element={secure(<Settings />)} />
-        <Route path="/settings/:section" element={secure(<Settings />)} />
-        <Route path="/finance" element={secure(<Finance />)} />
+        <Route path="/dashboard" element={secure(<Dashboard />, "dashboard")} />
+        <Route path="/buyers" element={secure(<Clients />, "buyers")} />
+        <Route path="/suppliers" element={secure(<Vendors />, "suppliers")} />
+        <Route path="/logistics" element={secure(<Logistics />, "logistics")} />
+        <Route path="/orders" element={secure(<Orders />, "orders")} />
+        <Route path="/reports" element={secure(<Reports />, "reports")} />
+        <Route path="/settings" element={secure(<Settings />, "settings")} />
+        <Route path="/settings/:section" element={secure(<Settings />, "settings")} />
+        <Route path="/finance" element={secure(<Finance />, "finance")} />
         <Route path="/profile" element={secure(<Profile />)} />
         <Route path="/monitoring" element={secure(<Monitoring />)} />
         <Route path="*" element={<Navigate to="/dashboard" replace />} />
