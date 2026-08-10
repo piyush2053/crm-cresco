@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { Navigate, useLocation, useNavigate } from "react-router-dom";
 import { api } from "../lib/api";
 
-export default function ProtectedRoute({ children }) {
+export default function ProtectedRoute({ children, module }) {
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -38,5 +38,8 @@ export default function ProtectedRoute({ children }) {
     };
   }, [navigate]);
 
-  return localStorage.getItem("token") ? children : <Navigate to="/login" replace state={{ from: location }} />;
+  if (!localStorage.getItem("token")) return <Navigate to="/login" replace state={{ from: location }} />;
+  const user = JSON.parse(localStorage.getItem("user") || "{}");
+  const allowed = user.is_admin || !module || user.permissions?.modules?.[module] !== false;
+  return allowed ? children : <Navigate to="/dashboard" replace />;
 }

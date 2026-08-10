@@ -15,25 +15,24 @@ import logoIcon from "../../assets/logo-icon.png";
 const NAV_SECTIONS = [
   {
     label: "Overview",
-    items: [{ to: "/dashboard", label: "Dashboard", icon: LayoutGrid }],
+    items: [{ to: "/dashboard", label: "Dashboard", icon: LayoutGrid, module: "dashboard" }],
   },
   {
     label: "Directory",
     items: [
-      { to: "/buyers", label: "Buyers", icon: Building2 },
-      { to: "/suppliers", label: "Suppliers", icon: Building2 },
-      { to: "/finance", label: "Finance", icon: Landmark },
-      { to: "/logistics", label: "Logistics", icon: Truck },
-      { to: "/orders", label: "Orders", icon: LayoutGrid },
-      { to: "/reports", label: "Reports", icon: BarChart3 },
+      { to: "/buyers", label: "Buyers", icon: Building2, module: "buyers" },
+      { to: "/suppliers", label: "Suppliers", icon: Building2, module: "suppliers" },
+      { to: "/finance", label: "Finance", icon: Landmark, module: "finance" },
+      { to: "/logistics", label: "Logistics", icon: Truck, module: "logistics" },
+      { to: "/orders", label: "Orders", icon: LayoutGrid, module: "orders" },
+      { to: "/reports", label: "Reports", icon: BarChart3, module: "reports" },
       { to: "/monitoring", label: "Monitoring", icon: Activity, adminOnly: true },
-      { to: "/settings", label: "Settings", icon: Settings },
+      { to: "/settings", label: "Settings", icon: Settings, module: "settings" },
     ],
   },
 ];
 
-export default function Sidebar({ open, onClose }) {
-  const user = JSON.parse(localStorage.getItem("user") || "{}");
+export default function Sidebar({ open, onClose, user = {} }) {
   return (
     <>
       {/* mobile overlay */}
@@ -68,7 +67,7 @@ export default function Sidebar({ open, onClose }) {
                 {section.label}
               </p>
               <div className="space-y-1">
-                {section.items.filter(item => !item.adminOnly || user.is_admin).map(({ to, label, icon: Icon }) => (
+                {section.items.filter(item => (!item.adminOnly || user.is_admin) && (user.is_admin || !item.module || user.permissions?.modules?.[item.module] !== false)).map(({ to, label, icon: Icon }) => (
                   <NavLink
                     key={to}
                     to={to}
