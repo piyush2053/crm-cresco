@@ -38,7 +38,9 @@ export default function ProtectedRoute({ children, module }) {
     };
   }, [navigate]);
 
-  if (!localStorage.getItem("token")) return <Navigate to="/login" replace state={{ from: location }} />;
+  if (!localStorage.getItem("token") && !localStorage.getItem("refreshToken")) {
+    return <Navigate to="/login" replace state={{ from: location }} />;
+  }
   const user = JSON.parse(localStorage.getItem("user") || "{}");
   const allowed = !module || user.permissions?.modules?.[module] === true;
   return allowed ? children : <Navigate to="/dashboard" replace />;

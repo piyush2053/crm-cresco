@@ -17,12 +17,17 @@ import ResetPassword from "./pages/ResetPassword";
 import EmailNotifications from "./pages/EmailNotifications";
 
 const secure = (page, module) => <ProtectedRoute module={module}>{page}</ProtectedRoute>;
+const hasStoredSession = () => Boolean(localStorage.getItem("token") || localStorage.getItem("refreshToken"));
+
+function HomeRedirect() {
+  return <Navigate to={hasStoredSession() ? "/dashboard" : "/login"} replace />;
+}
 
 export default function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Navigate to="/login" replace />} />
+        <Route path="/" element={<HomeRedirect />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
