@@ -12,6 +12,9 @@ import Orders from "./pages/Orders";
 import Finance from "./pages/Finance";
 import Profile from "./pages/Profile";
 import Monitoring from "./pages/Monitoring";
+import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword";
+import EmailNotifications from "./pages/EmailNotifications";
 
 const secure = (page, module) => <ProtectedRoute module={module}>{page}</ProtectedRoute>;
 
@@ -22,6 +25,8 @@ export default function App() {
         <Route path="/" element={<Navigate to="/login" replace />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/dashboard" element={secure(<Dashboard />, "dashboard")} />
         <Route path="/buyers" element={secure(<Clients />, "buyers")} />
         <Route path="/suppliers" element={secure(<Vendors />, "suppliers")} />
@@ -29,6 +34,7 @@ export default function App() {
         <Route path="/orders" element={secure(<Orders />, "orders")} />
         <Route path="/reports" element={secure(<Reports />, "reports")} />
         <Route path="/settings" element={secure(<Settings />, "settings")} />
+        <Route path="/settings/email-notifications" element={secure(<EmailNotifications />, "settings")} />
         <Route path="/settings/:section" element={secure(<Settings />, "settings")} />
         <Route path="/finance" element={secure(<Finance />, "finance")} />
         <Route path="/profile" element={secure(<Profile />)} />

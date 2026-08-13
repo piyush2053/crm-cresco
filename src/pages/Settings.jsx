@@ -5,6 +5,7 @@ const MODULES=["dashboard","buyers","suppliers","finance","logistics","orders","
 const SECTIONS=[
  ["global-access","Global Access","Users, roles and granular drag-and-drop permissions",KeyRound],
  ["mail-settings","Mail Settings","Design the active CRM email template with a live delivery preview",MessageSquare],
+ ["email-notifications","Email Notifications","Choose which CRM events send email or in-app alerts and who receives them",MessageSquare],
  ["master-data","Master Data","Products, geography, warehouses, commercial, logistics and CRM masters",Database],
  ["business-logic-centre","Business Logic & Configuration Centre","Formula, field, variable, validation, automation, sandbox and impact engine",GitBranch],
  ["business-rules","Business Rules","Formulas, validity periods, thresholds, holidays and automation rules",GitBranch],
