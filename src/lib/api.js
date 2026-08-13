@@ -4,9 +4,10 @@ function backendOffline(){const now=Date.now();if(now-lastOfflineAlert>5000){las
 async function request(url,options){try{return await fetch(url,options)}catch(error){if(error?.name==="AbortError")throw error;backendOffline();throw new ApiError("Backend server unavailable. Please try again after the API starts.",0)}}
 
 export class ApiError extends Error {
-  constructor(message, status) {
+  constructor(message, status, details = {}) {
     super(message);
     this.status = status;
+    Object.assign(this, details);
   }
 }
 
@@ -34,7 +35,7 @@ export async function api(path, options = {}, retry = true) {
   if (response.status === 401 && retry && (await refreshAccessToken())) return api(path, options, false);
   if (!response.ok) {
     const data = await response.json().catch(() => ({}));
-    throw new ApiError(data.message || "Something went wrong. Please try again.", response.status);
+    throw new ApiError(data.message || "Something went wrong. Please try again.", response.status, data);
   }
   if (response.status === 204) return null;
   return response.json();

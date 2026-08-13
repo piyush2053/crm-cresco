@@ -1,6 +1,5 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Login from "./pages/Login";
-import Signup from "./pages/Signup";
 import Dashboard from "./pages/Dashboard";
 import Clients from "./pages/Clients";
 import Vendors from "./pages/Vendors";
@@ -29,7 +28,6 @@ export default function App() {
       <Routes>
         <Route path="/" element={<HomeRedirect />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<Signup />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/dashboard" element={secure(<Dashboard />, "dashboard")} />
