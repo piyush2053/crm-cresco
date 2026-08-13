@@ -40,6 +40,6 @@ export default function ProtectedRoute({ children, module }) {
 
   if (!localStorage.getItem("token")) return <Navigate to="/login" replace state={{ from: location }} />;
   const user = JSON.parse(localStorage.getItem("user") || "{}");
-  const allowed = user.is_admin || !module || user.permissions?.modules?.[module] !== false;
+  const allowed = !module || user.permissions?.modules?.[module] === true;
   return allowed ? children : <Navigate to="/dashboard" replace />;
 }

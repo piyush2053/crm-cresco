@@ -67,7 +67,7 @@ export default function Sidebar({ open, onClose, user = {} }) {
                 {section.label}
               </p>
               <div className="space-y-1">
-                {section.items.filter(item => (!item.adminOnly || user.is_admin) && (user.is_admin || !item.module || user.permissions?.modules?.[item.module] !== false)).map(({ to, label, icon: Icon }) => (
+                {section.items.filter(item => (!item.adminOnly || user.is_admin) && (!item.module || user.permissions?.modules?.[item.module] === true)).map(({ to, label, icon: Icon }) => (
                   <NavLink
                     key={to}
                     to={to}
