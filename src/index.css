@@ -31,6 +31,32 @@
 }
 
 @layer components {
+  button.crm-api-pending {
+    position: relative !important;
+    cursor: wait !important;
+    font-size: 0 !important;
+    pointer-events: none !important;
+  }
+  button.crm-api-pending > * {
+    visibility: hidden !important;
+  }
+  button.crm-api-pending::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 1rem;
+    height: 1rem;
+    margin: -0.5rem 0 0 -0.5rem;
+    border: 2px solid currentColor;
+    border-right-color: transparent;
+    border-radius: 9999px;
+    color: #0f4c5c;
+    animation: crm-button-spin 650ms linear infinite;
+  }
+  button.crm-api-pending:is(.bg-accent,.bg-primary,.bg-error,.bg-green-600,.bg-red-600)::after {
+    color: #ffffff;
+  }
   button.bg-accent {
     background-color: #d96f08 !important;
     color: #ffffff !important;
@@ -41,6 +67,10 @@
   button.bg-accent:disabled {
     background-color: #d98a3d !important;
   }
+}
+
+@keyframes crm-button-spin {
+  to { transform: rotate(360deg); }
 }
 
 /* Cresco form-control system: removes browser-native visual chrome globally. */

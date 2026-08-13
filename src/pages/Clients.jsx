@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { CheckCircle2, ChevronDown, Download, Eye, FileSpreadsheet, Filter, Plus, Search, Settings2, Trash2, Upload, X } from "lucide-react";
 import DashboardLayout from "../components/layout/DashboardLayout";
-import { api, download } from "../lib/api";
+import { api, download, withButtonLoader } from "../lib/api";
 import { can } from "../lib/permissions";
 import { useToast } from "../components/toast";
 
@@ -32,7 +32,7 @@ export default function Clients(){
  async function openBuyer(id){try{setSelected(await api(`/buyers/${id}`));setTab("Overview")}catch(e){toast(e.message,"error")}}
  async function save(e){e.preventDefault();setSaving(true);try{const payload={...form,monthly_consumption:form.monthly_consumption===""?null:Number(form.monthly_consumption)};const buyer=await api("/buyers",{method:"POST",body:JSON.stringify(payload)});setFormOpen(false);setForm(EMPTY);toast("Buyer Group created.");load();openBuyer(buyer.id)}catch(e){toast(e.message,"error")}finally{setSaving(false)}}
  function sortBy(key){if(sort===key)setDirection(direction==="asc"?"desc":"asc");else{setSort(key);setDirection("asc")}}
- function exportCsv(){const cols=COLUMNS.filter(c=>visible.includes(c[0]));const csv=[cols.map(c=>c[1]),...rows.map(r=>cols.map(c=>r[c[0]]??""))].map(line=>line.map(v=>`"${String(v).replaceAll('"','""')}"`).join(",")).join("\n");const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv"}));a.download="buyers-filtered.csv";a.click();URL.revokeObjectURL(a.href)}
+ function exportCsv(){return withButtonLoader(()=>{const cols=COLUMNS.filter(c=>visible.includes(c[0]));const csv=[cols.map(c=>c[1]),...rows.map(r=>cols.map(c=>r[c[0]]??""))].map(line=>line.map(v=>`"${String(v).replaceAll('"','""')}"`).join(",")).join("\n");const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv"}));a.download="buyers-filtered.csv";a.click();URL.revokeObjectURL(a.href)})}
  async function addChild(kind,data){try{await api(`/buyers/${selected.id}/${kind}`,{method:"POST",body:JSON.stringify(data)});toast(`${kind==="contacts"?"Contact":"Location"} added.`);setSelected(await api(`/buyers/${selected.id}`));setContactForm(null);setLocationForm(null)}catch(e){toast(e.message,"error")}}
  function chooseUpload(file){if(!file)return;if(!file.name.toLowerCase().endsWith(".xlsx")){toast("Please select an .xlsx file.","error");return}setUploadFile(file);setUploadResult(null);setUploadAnalysis(null);setUploadState("ready")}
  async function analyzeBuyers(){const body=new FormData();body.append("file",uploadFile);setUploadState("analyzing");try{const analysis=await api("/buyers/bulk-upload/analyze",{method:"POST",body});setUploadAnalysis(analysis);setUploadState("analyzed")}catch(e){setUploadState("failed");toast(e.message,"error")}}
