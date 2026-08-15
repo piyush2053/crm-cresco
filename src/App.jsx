@@ -14,6 +14,7 @@ import Monitoring from "./pages/Monitoring";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import EmailNotifications from "./pages/EmailNotifications";
+import WebsiteProducts from "./pages/WebsiteProducts";
 
 const secure = (page, module) => <ProtectedRoute module={module}>{page}</ProtectedRoute>;
 const hasStoredSession = () => Boolean(localStorage.getItem("token") || localStorage.getItem("refreshToken"));
@@ -36,6 +37,7 @@ export default function App() {
         <Route path="/logistics" element={secure(<Logistics />, "logistics")} />
         <Route path="/orders" element={secure(<Orders />, "orders")} />
         <Route path="/reports" element={secure(<Reports />, "reports")} />
+        <Route path="/website-products" element={secure(<WebsiteProducts />, "website_products")} />
         <Route path="/settings" element={secure(<Settings />, "settings")} />
         <Route path="/settings/email-notifications" element={secure(<EmailNotifications />, "settings")} />
         <Route path="/settings/:section" element={secure(<Settings />, "settings")} />

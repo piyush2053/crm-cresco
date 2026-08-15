@@ -8,6 +8,7 @@ import {
   Settings,
   X,
   Activity,
+  PackageSearch,
 } from "lucide-react";
 import logoFull from "../../assets/logo-full.png";
 import logoIcon from "../../assets/logo-icon.png";
@@ -22,6 +23,7 @@ const NAV_SECTIONS = [
     items: [
       { to: "/buyers", label: "Buyers", icon: Building2, module: "buyers" },
       { to: "/suppliers", label: "Suppliers", icon: Building2, module: "suppliers" },
+      { to: "/website-products", label: "Website Products", icon: PackageSearch, module: "website_products" },
       { to: "/finance", label: "Finance", icon: Landmark, module: "finance" },
       { to: "/logistics", label: "Logistics", icon: Truck, module: "logistics" },
       { to: "/orders", label: "Orders", icon: LayoutGrid, module: "orders" },

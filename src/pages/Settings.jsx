@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps,react-hooks/set-state-in-effect */
 import{useEffect,useState}from"react";import{createPortal}from"react-dom";import{ArrowLeft,ArrowRight,Database,FileText,GitBranch,GripVertical,Hash,History as HistoryIcon,KeyRound,LoaderCircle,MessageSquare,Plus,Pencil,Settings2,ShieldCheck,Trash2,X}from"lucide-react";import{useNavigate,useParams}from"react-router-dom";import DashboardLayout from"../components/layout/DashboardLayout";import MailSettings from"../components/MailSettings";import{SelectField}from"../components/FormControls";import{api}from"../lib/api";import{useToast}from"../components/toast";
 import BusinessLogicCenter from"../components/BusinessLogicCenter";
-const MODULES=["dashboard","buyers","suppliers","finance","logistics","orders","reports","settings","users","roles","uploads"],ACTIONS=["read","create","update","delete","approve","export","print"];
+const MODULES=["dashboard","buyers","suppliers","website_products","finance","logistics","orders","reports","settings","users","roles","uploads"],ACTIONS=["read","create","update","delete","approve","export","print"];
 const SECTIONS=[
  ["global-access","Global Access","Users, roles and granular drag-and-drop permissions",KeyRound],
  ["mail-settings","Mail Settings","Design the active CRM email template with a live delivery preview",MessageSquare],
