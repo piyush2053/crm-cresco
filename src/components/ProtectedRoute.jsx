@@ -27,6 +27,7 @@ export default function ProtectedRoute({ children, module }) {
       if (Date.now() - Number(localStorage.getItem("lastActivity") || 0) > timeout) {
         heartbeat(true);
         ["token", "refreshToken", "user", "lastActivity", "activitySessionId"].forEach(key => localStorage.removeItem(key));
+        window.dispatchEvent(new CustomEvent("crm:session-expired", { detail: { message: "Your session has expired. Please login again to restart the session." } }));
         navigate("/login", { replace: true });
       }
     }, 60000);

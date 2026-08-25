@@ -9,7 +9,16 @@ export default function ToastProvider({ children }) {
     setToasts((items) => [...items, { id, message, type }]);
     window.setTimeout(() => setToasts((items) => items.filter((item) => item.id !== id)), 4000);
   }, []);
-  useEffect(()=>{const handler=event=>showToast(event.detail?.message||"Backend server unavailable.","error");window.addEventListener("crm:api-offline",handler);return()=>window.removeEventListener("crm:api-offline",handler)},[showToast]);
+  useEffect(()=>{
+    const offlineHandler=event=>showToast(event.detail?.message||"Backend server unavailable.","error");
+    const sessionHandler=event=>showToast(event.detail?.message||"Your session has expired. Please login again to restart the session.","error");
+    window.addEventListener("crm:api-offline",offlineHandler);
+    window.addEventListener("crm:session-expired",sessionHandler);
+    return()=>{
+      window.removeEventListener("crm:api-offline",offlineHandler);
+      window.removeEventListener("crm:session-expired",sessionHandler);
+    };
+  },[showToast]);
   return <ToastContext.Provider value={showToast}>{children}
     <div className="fixed right-4 top-4 z-[100] w-[min(360px,calc(100vw-2rem))] space-y-2">
       {toasts.map((toast) => <div key={toast.id} className={`flex items-center gap-3 rounded-lg border bg-white p-3 shadow-elevated ${toast.type === "error" ? "border-error/30" : "border-success/30"}`}>
