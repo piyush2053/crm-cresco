@@ -1,9 +1,10 @@
-import { CalendarDays, Check, ChevronDown, ChevronLeft, ChevronRight, LoaderCircle } from "lucide-react";
+import { CalendarDays, Check, ChevronDown, ChevronLeft, ChevronRight, LoaderCircle, Search } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
-export function SelectField({ name, value, defaultValue = "", onChange, options = [], placeholder = "Select an option", required = false, disabled = false, loading = false, className = "" }) {
+export function SelectField({ name, value, defaultValue = "", onChange, options = [], placeholder = "Select an option", required = false, disabled = false, loading = false, searchable = false, searchPlaceholder = "Search options…", className = "" }) {
   const [open, setOpen] = useState(false);
   const [internalValue, setInternalValue] = useState(defaultValue);
+  const [search, setSearch] = useState("");
   const root = useRef(null);
   useEffect(() => {
     const close = (event) => { if (!root.current?.contains(event.target)) setOpen(false); };
@@ -12,17 +13,19 @@ export function SelectField({ name, value, defaultValue = "", onChange, options 
   }, []);
   const currentValue = value === undefined ? internalValue : value;
   const selected = options.find((option) => String(option.value) === String(currentValue));
+  const visibleOptions = searchable ? options.filter((option) => String(option.label ?? option.value).toLowerCase().includes(search.trim().toLowerCase())) : options;
   const choose = (nextValue) => { if (value === undefined) setInternalValue(nextValue); onChange?.(nextValue); setOpen(false); };
   return <div ref={root} className={`relative ${className}`}>
     {name && <input type="hidden" name={name} value={currentValue ?? ""} />}
     <button type="button" disabled={disabled||loading} onClick={() => setOpen((current) => !current)} onKeyDown={event=>{if(event.key==="Escape")setOpen(false);if(event.key==="ArrowDown"){event.preventDefault();setOpen(true)}}} aria-haspopup="listbox" aria-expanded={open} aria-required={required} aria-busy={loading} className="flex h-10 w-full items-center justify-between rounded-md border border-input bg-white px-3 text-left text-sm transition hover:border-secondary focus:outline-none focus:ring-2 focus:ring-primary/20 disabled:cursor-not-allowed disabled:bg-card disabled:opacity-60">
       <span className={selected ? "text-foreground" : "text-muted-foreground"}>{loading?"Loading options…":selected?.label || placeholder}</span>{loading?<LoaderCircle className="w-4 animate-spin text-accent"/>:<ChevronDown className={`w-4 text-muted-foreground transition ${open ? "rotate-180" : ""}`} />}
     </button>
-    {open && <div role="listbox" className="absolute z-20 mt-1 max-h-52 w-full overflow-y-auto rounded-md border border-border bg-white p-1 shadow-elevated">
-      {!options.length&&<p className="px-3 py-2 text-sm text-muted-foreground">No options available</p>}
-      {options.map((option) => <button key={option.value} type="button" role="option" aria-selected={String(option.value) === String(currentValue)} onClick={() => choose(option.value)} className="flex w-full items-center justify-between rounded px-3 py-2 text-left text-sm hover:bg-card focus:bg-card focus:outline-none">
+    {open && <div role="listbox" className="absolute z-20 mt-1 max-h-64 w-full overflow-hidden rounded-md border border-border bg-white p-1 shadow-elevated">
+      {searchable&&<div className="relative mb-1"><Search className="pointer-events-none absolute left-3 top-2.5 h-4 w-4 text-muted-foreground"/><input autoFocus value={search} onChange={(event)=>setSearch(event.target.value)} onKeyDown={(event)=>event.stopPropagation()} placeholder={searchPlaceholder} className="h-9 w-full rounded border bg-card pl-9 pr-3 text-sm outline-none focus:ring-2 focus:ring-primary/20"/></div>}
+      <div className="max-h-52 overflow-y-auto">{!visibleOptions.length&&<p className="px-3 py-2 text-sm text-muted-foreground">{options.length?"No matching options":"No options available"}</p>}
+      {visibleOptions.map((option) => <button key={option.value} type="button" role="option" aria-selected={String(option.value) === String(currentValue)} onClick={() => {choose(option.value);setSearch("")}} className="flex w-full items-center justify-between rounded px-3 py-2 text-left text-sm hover:bg-card focus:bg-card focus:outline-none">
         {option.label}{String(option.value) === String(currentValue) && <Check className="w-4 text-accent" />}
-      </button>)}
+      </button>)}</div>
     </div>}
   </div>;
 }
