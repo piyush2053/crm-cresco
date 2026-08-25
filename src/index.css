@@ -243,3 +243,19 @@ input:-webkit-autofill:focus {
   box-shadow: 0 0 0 1000px #ffffff inset !important;
   transition: background-color 9999s ease-out;
 }
+
+input::placeholder,
+textarea::placeholder {
+  color: #94a3b8;
+  opacity: 0.72;
+  font-weight: 400;
+}
+
+/* CRM-wide form guidance: mark every mandatory field consistently. */
+label:has(input[required], textarea[required], select[required], button[aria-required="true"]) > span:first-child::after,
+label:has(input[required], textarea[required], select[required], button[aria-required="true"]) > small:first-child::after,
+label:has(input[required], textarea[required], select[required], button[aria-required="true"]) > b:first-child::after {
+  content: " *";
+  color: #dc2626;
+  font-weight: 700;
+}
