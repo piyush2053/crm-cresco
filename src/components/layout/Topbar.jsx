@@ -6,6 +6,18 @@ import { api } from "../../lib/api";
 import { useToast } from "../toast";
 
 const sourceLabel={Buyer:"Buyer Directory",Supplier:"Supplier Directory",Order:"Orders",Inquiry:"Sales Inquiries",Commercial:"Finance Commercial Register","Logistics Lane":"Logistics Directory",User:"User Directory","Master Data":"Settings Master Data",Report:"Reports Library"};
+const sourceStyles={
+  Buyer:{icon:"bg-blue-50 text-blue-600",label:"text-blue-600",badge:"bg-blue-50 text-blue-700"},
+  Supplier:{icon:"bg-emerald-50 text-emerald-600",label:"text-emerald-600",badge:"bg-emerald-50 text-emerald-700"},
+  Order:{icon:"bg-indigo-50 text-indigo-600",label:"text-indigo-600",badge:"bg-indigo-50 text-indigo-700"},
+  Inquiry:{icon:"bg-amber-50 text-amber-600",label:"text-amber-600",badge:"bg-amber-50 text-amber-700"},
+  Commercial:{icon:"bg-orange-50 text-orange-600",label:"text-orange-600",badge:"bg-orange-50 text-orange-700"},
+  "Logistics Lane":{icon:"bg-green-50 text-green-600",label:"text-green-600",badge:"bg-green-50 text-green-700"},
+  User:{icon:"bg-purple-50 text-purple-600",label:"text-purple-600",badge:"bg-purple-50 text-purple-700"},
+  "Master Data":{icon:"bg-cyan-50 text-cyan-600",label:"text-cyan-600",badge:"bg-cyan-50 text-cyan-700"},
+  Report:{icon:"bg-rose-50 text-rose-600",label:"text-rose-600",badge:"bg-rose-50 text-rose-700"},
+};
+const defaultSourceStyle={icon:"bg-slate-100 text-slate-600",label:"text-slate-600",badge:"bg-slate-100 text-slate-700"};
 
 export default function Topbar({ title, onMenuClick }) {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -74,7 +86,7 @@ export default function Topbar({ title, onMenuClick }) {
             className="w-full h-9 rounded-md bg-card border border-border pl-9 pr-3 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/30 focus:border-ring transition"
           />
           {searching&&<LoaderCircle className="absolute right-3 top-2.5 h-4 w-4 animate-spin text-accent"/>}
-          {searchOpen&&search.trim().length>=2&&<><button aria-label="Close search" className="fixed inset-0 z-20 cursor-default" onClick={()=>setSearchOpen(false)}/><div className="absolute left-0 right-0 top-11 z-40 max-h-[70vh] overflow-y-auto rounded-xl border bg-white p-2 shadow-elevated">{searchResults.length?searchResults.map((item,index)=><button key={`${item.type}-${item.id}-${index}`} onClick={()=>{navigate(item.path);setSearchOpen(false);setSearch("")}} className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left hover:bg-card"><span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-accent/10 text-xs font-bold text-accent">{item.type.slice(0,2).toUpperCase()}</span><span className="min-w-0 flex-1"><span className="mb-0.5 block text-[10px] font-semibold uppercase tracking-wide text-accent">From {sourceLabel[item.type]||item.type}</span><span className="block truncate text-sm font-medium">{item.title}</span><span className="block truncate text-xs text-muted-foreground">{item.subtitle||item.type}</span></span><span className="rounded-full bg-card px-2 py-1 text-[10px] text-muted-foreground">{item.type}</span></button>):!searching&&<div className="p-8 text-center"><Search className="mx-auto mb-2 h-6 w-6 text-muted-foreground"/><p className="text-sm font-medium">No CRM records found</p><p className="text-xs text-muted-foreground">Try a buyer, order, invoice, user or reference number.</p></div>}</div></>}
+          {searchOpen&&search.trim().length>=2&&<><button aria-label="Close search" className="fixed inset-0 z-20 cursor-default" onClick={()=>setSearchOpen(false)}/><div className="absolute left-0 right-0 top-11 z-40 max-h-[70vh] overflow-y-auto rounded-xl border bg-white p-2 shadow-elevated">{searchResults.length?searchResults.map((item,index)=>{const colors=sourceStyles[item.type]||defaultSourceStyle;return <button key={`${item.type}-${item.id}-${index}`} onClick={()=>{navigate(item.path);setSearchOpen(false);setSearch("")}} className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left hover:bg-card"><span className={`grid h-8 w-8 shrink-0 place-items-center rounded-lg text-xs font-bold ${colors.icon}`}>{item.type.slice(0,2).toUpperCase()}</span><span className="min-w-0 flex-1"><span className={`mb-0.5 block text-[10px] font-semibold uppercase tracking-wide ${colors.label}`}>From {sourceLabel[item.type]||item.type}</span><span className="block truncate text-sm font-medium">{item.title}</span><span className="block truncate text-xs text-muted-foreground">{item.subtitle||item.type}</span></span><span className={`rounded-full px-2 py-1 text-[10px] ${colors.badge}`}>{item.type}</span></button>}):!searching&&<div className="p-8 text-center"><Search className="mx-auto mb-2 h-6 w-6 text-muted-foreground"/><p className="text-sm font-medium">No CRM records found</p><p className="text-xs text-muted-foreground">Try a buyer, order, invoice, user or reference number.</p></div>}</div></>}
         </div>
       </div>
 
