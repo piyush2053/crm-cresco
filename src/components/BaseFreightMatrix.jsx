@@ -4,9 +4,11 @@ import { Link } from "react-router-dom";
 import { api } from "../lib/api";
 import { useToast } from "./toast";
 
-export default function BaseFreightMatrix() {
+export default function BaseFreightMatrix({ warehouses = [] }) {
   const [rows, setRows] = useState([]);
   const [search, setSearch] = useState("");
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [selectedWarehouse, setSelectedWarehouse] = useState(null);
   const [form, setForm] = useState({ from: "", to: "", load: "", freight: "", remarks: "" });
   const [open, setOpen] = useState(false);
   const toast = useToast();
@@ -35,9 +37,23 @@ export default function BaseFreightMatrix() {
   }
 
   const openAction = (detail) => window.dispatchEvent(new CustomEvent("crm:logistics-action", { detail }));
-  const filtered = rows.filter((row) =>
-    `${row.from_district} ${row.to_district} ${row.quantity_kg}`.toLowerCase().includes(search.toLowerCase()),
-  );
+  const normalizedSearch = search.trim().toLowerCase();
+  const warehouseText = (warehouse) => `${warehouse.warehouse_name || ""} ${warehouse.warehouse_code || ""} ${warehouse.district || warehouse.dispatch_location || ""} ${warehouse.pincode || ""} ${warehouse.supplier_name || ""}`.toLowerCase();
+  const matchingWarehouses = warehouses.filter((warehouse) => !normalizedSearch || warehouseText(warehouse).includes(normalizedSearch));
+  const matchingDistricts = new Set(matchingWarehouses.map((warehouse) => String(warehouse.district || warehouse.dispatch_location || "").toLowerCase()).filter(Boolean));
+  const selectedDistrict = String(selectedWarehouse?.district || selectedWarehouse?.dispatch_location || "").toLowerCase();
+  const filtered = rows.filter((row) => {
+    if (!normalizedSearch) return true;
+    const rateText = `${row.from_district || ""} ${row.to_district || ""} ${row.quantity_kg || ""} ${row.base_freight_per_kg || ""}`.toLowerCase();
+    const fromDistrict = String(row.from_district || "").toLowerCase();
+    return rateText.includes(normalizedSearch) || (selectedDistrict ? fromDistrict === selectedDistrict : matchingDistricts.has(fromDistrict));
+  });
+
+  function chooseWarehouse(warehouse) {
+    setSelectedWarehouse(warehouse);
+    setSearch(`${warehouse.warehouse_name}${warehouse.district ? ` · ${warehouse.district}` : ""}${warehouse.pincode ? ` · ${warehouse.pincode}` : ""}`);
+    setSearchOpen(false);
+  }
 
   return <section className="unified-freight rounded-lg border">
     <div className="flex flex-wrap gap-2 border-b bg-muted/30 p-4">
@@ -66,7 +82,34 @@ export default function BaseFreightMatrix() {
     </form>}
 
     <div className="p-3">
-      <div className="relative mb-3"><Search className="absolute left-3 top-3 w-4" /><input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search From, To or Load…" className="h-10 w-full rounded border pl-9" /></div>
+      <div className="relative mb-3">
+        <Search className="absolute left-3 top-3 z-10 w-4" />
+        <input
+          value={search}
+          onFocus={() => setSearchOpen(true)}
+          onBlur={() => window.setTimeout(() => setSearchOpen(false), 150)}
+          onChange={(event) => { setSearch(event.target.value); setSelectedWarehouse(null); setSearchOpen(true); }}
+          placeholder="Search warehouse, district, pincode, code, route or load…"
+          className="h-10 w-full rounded border pl-9"
+          role="combobox"
+          aria-expanded={searchOpen}
+          aria-autocomplete="list"
+        />
+        {searchOpen && <div className="absolute z-30 mt-1 max-h-72 w-full overflow-auto rounded-md border bg-white shadow-lg">
+          <div className="border-b px-3 py-2 text-xs font-medium text-muted-foreground">Supplier warehouses</div>
+          {matchingWarehouses.slice(0, 100).map((warehouse) => <button
+            type="button"
+            key={warehouse.id}
+            onMouseDown={(event) => event.preventDefault()}
+            onClick={() => chooseWarehouse(warehouse)}
+            className="block w-full border-b px-3 py-2 text-left text-sm hover:bg-muted"
+          >
+            <span className="font-medium">{warehouse.warehouse_name}</span>
+            <span className="ml-2 text-muted-foreground">{[warehouse.warehouse_code, warehouse.district || warehouse.dispatch_location, warehouse.pincode, warehouse.supplier_name].filter(Boolean).join(" · ")}</span>
+          </button>)}
+          {!matchingWarehouses.length && <p className="px-3 py-4 text-sm text-muted-foreground">No supplier warehouse found.</p>}
+        </div>}
+      </div>
       <div className="max-h-96 overflow-auto">
         <table className="w-full text-sm">
           <thead className="sticky top-0 bg-card"><tr>{["From", "To", "Load (KG)", "Freight (Rs/Kg)", "Source"].map((heading) => <th key={heading} className="border p-2 text-left">{heading}</th>)}</tr></thead>
