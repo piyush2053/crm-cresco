@@ -8,4 +8,4 @@ export const INDIAN_STATES_AND_UTS = [
 ];
 
 export const STATE_OPTIONS = INDIAN_STATES_AND_UTS.map(value => ({ value, label: value }));
-export const GST_SLAB_OPTIONS = ["Nil (0%)", "0.25%", "3%", "5%", "12%", "18%", "28%"].map(value => ({ value, label: value }));
+export const GST_SLAB_OPTIONS = ["0-40 Lakh", "40 Lakh-1.5 Cr", "1.5-5 Cr", "5-25 Cr", "25-100 Cr", "100-500 Cr", "500 Cr and above"].map(value => ({ value, label: value }));
