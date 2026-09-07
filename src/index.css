@@ -259,3 +259,6 @@ label:has(input[required], textarea[required], select[required], button[aria-req
   color: #dc2626;
   font-weight: 700;
 }
+/* Freight rate entry is unified; legacy lane-rate UI remains in code for historical compatibility. */
+.unified-freight ~ * { display: none; }
+.space-y-4 > section:first-child a[href="/logistics/freight-upload"] { display: none; }
