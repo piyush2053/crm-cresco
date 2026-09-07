@@ -36,7 +36,6 @@ export default function BaseFreightMatrix({ warehouses = [] }) {
     }
   }
 
-  const openAction = (detail) => window.dispatchEvent(new CustomEvent("crm:logistics-action", { detail }));
   const normalizedSearch = search.trim().toLowerCase();
   const warehouseText = (warehouse) => `${warehouse.warehouse_name || ""} ${warehouse.warehouse_code || ""} ${warehouse.district || warehouse.dispatch_location || ""} ${warehouse.pincode || ""} ${warehouse.supplier_name || ""}`.toLowerCase();
   const matchingWarehouses = warehouses.filter((warehouse) => !normalizedSearch || warehouseText(warehouse).includes(normalizedSearch));
@@ -56,12 +55,6 @@ export default function BaseFreightMatrix({ warehouses = [] }) {
   }
 
   return <section className="unified-freight rounded-lg border">
-    <div className="flex flex-wrap gap-2 border-b bg-muted/30 p-4">
-      <button onClick={() => openAction("lane")} className="rounded border bg-white px-3 py-2 text-sm">Create Lane</button>
-      <button onClick={() => openAction("shipment")} className="rounded border bg-white px-3 py-2 text-sm">Book Freight</button>
-      <button onClick={() => openAction("quote")} className="rounded border bg-white px-3 py-2 text-sm">Record Quote</button>
-    </div>
-
     <div className="flex flex-wrap items-center justify-between gap-2 border-b p-4">
       <div>
         <h3 className="font-semibold">Freight Rates</h3>
