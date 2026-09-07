@@ -1,7 +1,7 @@
 import { CalendarDays, Check, ChevronDown, ChevronLeft, ChevronRight, LoaderCircle, Search } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
-export function SelectField({ name, value, defaultValue = "", onChange, options = [], placeholder = "Select an option", required = false, disabled = false, loading = false, searchable = false, searchPlaceholder = "Search options…", className = "" }) {
+export function SelectField({ name, value, defaultValue = "", onChange, options = [], placeholder = "Select an option", required = false, disabled = false, loading = false, searchable = true, searchPlaceholder = "Search options…", className = "" }) {
   const [open, setOpen] = useState(false);
   const [internalValue, setInternalValue] = useState(defaultValue);
   const [search, setSearch] = useState("");
