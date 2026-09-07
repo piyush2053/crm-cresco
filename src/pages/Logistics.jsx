@@ -1,9 +1,9 @@
 /* eslint-disable react-hooks/set-state-in-effect, react-hooks/exhaustive-deps */
 import{useEffect,useState}from"react";import{AlertTriangle,BarChart3,Plus,Search,Settings2,Trash2,X}from"lucide-react";import DashboardLayout from"../components/layout/DashboardLayout";import{SelectField}from"../components/FormControls";import{api}from"../lib/api";import{can}from"../lib/permissions";import{useToast}from"../components/toast";
 const tabs=["Freight Engine","Transporter Management","Freight Cost Register","Logistics Analytics"],v=x=>x===null||x===undefined||x===""?"—":x;
-function Field({label,name,data,setData,type="text",required,options}){return <label><span className="mb-1 block text-xs font-medium text-muted-foreground">{label}</span>{options?
+function Field({label,name,data,setData,type="text",required,options}){const identity=["gst_number","pan_number"].includes(name);return <label><span className="mb-1 block text-xs font-medium text-muted-foreground">{label}</span>{options?
 <SelectField required={required} value={data[name]??""} onChange={value=>setData({...data,[name]:value})} options={options} placeholder="Select…"/>
-:<input required={required} type={type} value={data[name]??""} onChange={e=>setData({...data,[name]:e.target.value})} className="h-10 w-full rounded border px-3"/>}</label>}
+:<input required={required} type={type} maxLength={name==="pan_number"?10:name==="gst_number"?15:name==="phone_number"?10:name.includes("pincode")?6:undefined} value={data[name]??""} onChange={e=>setData({...data,[name]:identity?e.target.value.toUpperCase():e.target.value})} className="h-10 w-full rounded border px-3"/>}</label>}
 function Modal({title,close,children}){return <div className="fixed inset-0 z-50 grid place-items-center bg-primary/40 p-4"><div className="max-h-[92vh] w-full max-w-4xl overflow-auto rounded-xl bg-white p-6"><div className="mb-5 flex justify-between"><h3 className="text-lg font-semibold">{title}</h3><button onClick={close}><X className="w-5"/></button></div>{children}</div></div>}
 function mayDelete(){return can("delete")}
 async function removeLane(id){if(!id||!confirm("Delete this logistics lane?"))return;try{await api(`/logistics/lanes/${id}`,{method:"DELETE"});location.reload()}catch(e){alert(e.message)}}
