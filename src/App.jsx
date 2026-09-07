@@ -15,6 +15,7 @@ import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import EmailNotifications from "./pages/EmailNotifications";
 import WebsiteProducts from "./pages/WebsiteProducts";
+import FreightBulkUpload from "./pages/FreightBulkUpload";
 
 const secure = (page, module) => <ProtectedRoute module={module}>{page}</ProtectedRoute>;
 const hasStoredSession = () => Boolean(localStorage.getItem("token") || localStorage.getItem("refreshToken"));
@@ -35,6 +36,7 @@ export default function App() {
         <Route path="/buyers" element={secure(<Clients />, "buyers")} />
         <Route path="/suppliers" element={secure(<Vendors />, "suppliers")} />
         <Route path="/logistics" element={secure(<Logistics />, "logistics")} />
+        <Route path="/logistics/freight-upload" element={secure(<FreightBulkUpload />, "logistics")} />
         <Route path="/orders" element={secure(<Orders />, "orders")} />
         <Route path="/reports" element={secure(<Reports />, "reports")} />
         <Route path="/website-products" element={secure(<WebsiteProducts />, "website_products")} />
