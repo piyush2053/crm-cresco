@@ -2,7 +2,15 @@ const API_URL = import.meta.env.VITE_API_URL || "http://localhost:4000/api";
 let lastOfflineAlert=0;
 const pendingButtons=new WeakMap();
 const SESSION_EXPIRED_MESSAGE="Your session has expired. Please login again to restart the session.";
+let sessionExpiryNotified=false;
 function clearStoredSession(){["token","refreshToken","user","lastActivity","activitySessionId"].forEach(key=>localStorage.removeItem(key))}
+function expireSession(data={}){
+  clearStoredSession();
+  if(!sessionExpiryNotified&&typeof window!=="undefined"){
+    sessionExpiryNotified=true;
+    window.dispatchEvent(new CustomEvent("crm:session-expired",{detail:{...data,message:SESSION_EXPIRED_MESSAGE}}));
+  }
+}
 function mutationMethod(options={}){return ["POST","PUT","PATCH","DELETE"].includes(String(options.method||"GET").toUpperCase())}
 function activeActionButton(){if(typeof document==="undefined")return null;const active=document.activeElement;const button=active?.closest?.("button");if(button)return button;return active?.form?.querySelector?.('button[type="submit"],button:not([type])')||null}
 function beginButtonPending(options,force=false){if(!force&&!mutationMethod(options))return null;const button=activeActionButton();if(!button)return null;const current=pendingButtons.get(button);if(current){current.count+=1;return button}pendingButtons.set(button,{count:1,disabled:button.disabled,ariaBusy:button.getAttribute("aria-busy")});button.disabled=true;button.setAttribute("aria-busy","true");button.classList.add("crm-api-pending");return button}
@@ -29,6 +37,7 @@ async function refreshAccessToken() {
   if (!response.ok) return null;
   const data = await response.json();
   localStorage.setItem("token", data.token);
+  sessionExpiryNotified=false;
   return data.token;
 }
 
@@ -46,7 +55,7 @@ export async function api(path, options = {}, retry = true) {
   if (!response.ok) {
     const data = await response.json().catch(() => ({}));
     if(response.status===401&&hadSession){
-      clearStoredSession();
+      expireSession(data);
       throw new ApiError(SESSION_EXPIRED_MESSAGE,401,data);
     }
     throw new ApiError(data.message || "Something went wrong. Please try again.", response.status, data);
@@ -63,9 +72,17 @@ export async function download(path, filename, options = {}) {
   const started=Date.now();
   try {
   const token = localStorage.getItem("token");
-  const headers=new Headers(options.headers);headers.set("Authorization",`Bearer ${token}`);if(options.body)headers.set("Content-Type","application/json");
-  const response = await request(`${API_URL}${path}`, { ...options, headers });
-  if(response.status===401&&token){clearStoredSession();throw new ApiError(SESSION_EXPIRED_MESSAGE,401)}
+  const hadSession=Boolean(token||localStorage.getItem("refreshToken"));
+  const headers=new Headers(options.headers);if(token)headers.set("Authorization",`Bearer ${token}`);if(options.body)headers.set("Content-Type","application/json");
+  let response = await request(`${API_URL}${path}`, { ...options, headers });
+  if(response.status===401){
+    const refreshedToken=await refreshAccessToken();
+    if(refreshedToken){
+      headers.set("Authorization",`Bearer ${refreshedToken}`);
+      response=await request(`${API_URL}${path}`,{...options,headers});
+    }
+  }
+  if(response.status===401&&hadSession){expireSession();throw new ApiError(SESSION_EXPIRED_MESSAGE,401)}
   if (!response.ok) throw new ApiError("Unable to generate the report.", response.status);
   const url = URL.createObjectURL(await response.blob());
   const link = document.createElement("a");
