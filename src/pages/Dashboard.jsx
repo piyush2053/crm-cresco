@@ -4,9 +4,10 @@ import { useNavigate } from "react-router-dom";
 import DashboardLayout from "../components/layout/DashboardLayout";
 import { api } from "../lib/api";
 import { useToast } from "../components/toast";
+import { formatDecimal, formatMoney } from "../lib/format";
 
-const money = value => `₹${Number(value || 0).toLocaleString("en-IN", { maximumFractionDigits: 2 })}`;
-const show = value => value === null || value === undefined ? "—" : value;
+const money = value => formatMoney(value);
+const show = value => value === null || value === undefined ? "—" : formatDecimal(value);
 export default function Dashboard() {
   const [data, setData] = useState(null);
   const navigate = useNavigate();

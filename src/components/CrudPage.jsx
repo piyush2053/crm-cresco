@@ -4,8 +4,9 @@ import DashboardLayout from "./layout/DashboardLayout";
 import { api } from "../lib/api";
 import { useToast } from "./toast";
 import { DateField, SelectField } from "./FormControls";
+import { formatDecimal } from "../lib/format";
 
-const text = (value) => value ?? "—";
+const text = (value) => value === null || value === undefined || value === "" ? "—" : formatDecimal(value);
 
 export default function CrudPage({ title, heading, description, endpoint, columns, fields, actionLabel }) {
   const [rows, setRows] = useState([]);

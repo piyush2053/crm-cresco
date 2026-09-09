@@ -1,6 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import{useEffect,useState}from"react";import{Download,FilePlus2,History,LoaderCircle,Play,Settings2,X}from"lucide-react";import{api,download}from"../lib/api";import{can}from"../lib/permissions";import{useToast}from"./toast";
-const money=n=>`₹${Number(n||0).toLocaleString("en-IN",{maximumFractionDigits:2})}`,show=v=>v===null||v===undefined||v===""?"—":String(v);
+import{formatDecimal,formatMoney}from"../lib/format";
+const money=n=>formatMoney(n),show=v=>v===null||v===undefined||v===""?"—":formatDecimal(v);
 function Modal({title,close,children}){return <div className="fixed inset-0 z-50 grid place-items-center bg-primary/40 p-4"><div className="max-h-[92vh] w-full max-w-6xl overflow-auto rounded-xl bg-white p-6"><div className="mb-4 flex justify-between"><h3 className="font-semibold">{title}</h3><button onClick={close}><X className="w-5"/></button></div>{children}</div></div>}
 export default function DelayedPayments(){const[tab,setTab]=useState("Accrual Register"),[rows,setRows]=useState([]),[notes,setNotes]=useState([]),[kpi,setKpi]=useState({}),[search,setSearch]=useState(""),[history,setHistory]=useState(null),[settings,setSettings]=useState(null),[loading,setLoading]=useState(true),toast=useToast();const canApprove=can("approve");
  async function load(){setLoading(true);try{const[r,n,k]=await Promise.all([api(`/finance/delayed-payments?search=${encodeURIComponent(search)}`),api("/finance/debit-notes"),api("/finance/delayed-payments/dashboard")]);setRows(r);setNotes(n);setKpi(k)}catch(e){toast(e.message,"error")}finally{setLoading(false)}}useEffect(()=>{const t=setTimeout(load,200);return()=>clearTimeout(t)},[search]);

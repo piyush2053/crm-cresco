@@ -4,10 +4,11 @@ import { LoaderCircle } from "lucide-react";
 import { api } from "../lib/api";
 import { SelectField } from "./FormControls";
 import { useToast } from "./toast";
+import { formatMoney } from "../lib/format";
 
 const money = (value, perKg = false) => value === null || value === undefined
   ? "—"
-  : `₹${Number(value).toLocaleString("en-IN", { minimumFractionDigits: perKg ? 2 : 0, maximumFractionDigits: perKg ? 4 : 0 })}${perKg ? "/kg" : ""}`;
+  : formatMoney(value, perKg ? "/kg" : "");
 
 const quantityLabel = (kg) => Number(kg) < 1000 ? `${Number(kg)} KG` : `${Number(kg) / 1000} MT`;
 

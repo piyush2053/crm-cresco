@@ -6,6 +6,7 @@ import { api } from "../lib/api";
 import { can } from "../lib/permissions";
 import { SelectField } from "./FormControls";
 import { useToast } from "./toast";
+import { formatMoney } from "../lib/format";
 
 const emptyForm = { from: "", to: "", load: "", freight: "", remarks: "" };
 
@@ -81,7 +82,7 @@ export default function BaseFreightMatrix() {
     {searchDirty&&<div className="border-b bg-amber-50 px-4 py-3 text-center text-sm text-amber-800">District selection changed. Click <b>Search</b> to load matching freight rates.</div>}
     <div className="max-h-[52vh] overflow-auto">
       <table className="w-full min-w-[760px] text-sm"><thead className="sticky top-0 bg-card"><tr>{["From","To","Load (KG)","Freight (Rs/Kg)","Source","Action"].map(heading => <th key={heading} className="border-b p-3 text-left">{heading}</th>)}</tr></thead>
-        <tbody>{!searchDirty&&rows.map(row => <tr key={row.id} className="hover:bg-card/40"><td className="border-b p-3 font-medium">{row.from_district}</td><td className="border-b p-3 font-medium">{row.to_district}</td><td className="border-b p-3">{Number(row.quantity_kg).toLocaleString("en-IN")}</td><td className="border-b p-3">₹{row.base_freight_per_kg}</td><td className="border-b p-3">{row.source}</td><td className="border-b p-3">{can("update") ? <button onClick={() => edit(row)} className="inline-flex items-center gap-1 rounded border px-2.5 py-1.5 text-xs"><Pencil className="w-3.5" />Edit</button> : "—"}</td></tr>)}</tbody>
+        <tbody>{!searchDirty&&rows.map(row => <tr key={row.id} className="hover:bg-card/40"><td className="border-b p-3 font-medium">{row.from_district}</td><td className="border-b p-3 font-medium">{row.to_district}</td><td className="border-b p-3">{Number(row.quantity_kg).toLocaleString("en-IN")}</td><td className="border-b p-3">{formatMoney(row.base_freight_per_kg)}</td><td className="border-b p-3">{row.source}</td><td className="border-b p-3">{can("update") ? <button onClick={() => edit(row)} className="inline-flex items-center gap-1 rounded border px-2.5 py-1.5 text-xs"><Pencil className="w-3.5" />Edit</button> : "—"}</td></tr>)}</tbody>
       </table>
       {loading ? <div className="grid min-h-40 place-items-center"><div className="text-center text-sm text-muted-foreground"><LoaderCircle className="mx-auto mb-2 h-7 w-7 animate-spin text-accent"/>Loading freight rates…</div></div> : !searchDirty&&!rows.length && <div className="p-10 text-center"><p className="font-medium">No results for selected districts</p><p className="mt-1 text-sm text-muted-foreground">No freight rate is configured for {appliedSearch?.from||"the selected From district"} → {appliedSearch?.to||"the selected To district"}.</p></div>}
     </div>
