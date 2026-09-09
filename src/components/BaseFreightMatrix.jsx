@@ -51,7 +51,7 @@ export default function BaseFreightMatrix() {
     setOpen(true);
   }
 
-  const districtOptions = districts.filter(row=>row.is_active).map(row => ({ value: row.id, label: `${row.name} · ${row.state}` })).sort((a,b)=>a.label.localeCompare(b.label));
+  const districtOptions = districts.filter(row=>row.is_active).map(row => ({ value: row.id, label: row.name })).sort((a,b)=>a.label.localeCompare(b.label));
   const districtLabel = id => districtOptions.find(option=>String(option.value)===String(id))?.label || id;
 
   async function searchRates(event){event.preventDefault();const filters={from:fromSearch,to:toSearch};await load(filters);setAppliedSearch(filters);setSearchDirty(false)}
