@@ -26,7 +26,7 @@ export default function FreightEngine({ lanes = [] }) {
     Promise.all([api("/logistics/base-freight"), api("/logistics/districts")]).then(([rateRows, districtRows]) => { setRates(rateRows); setDistricts(districtRows.filter(row => row.is_active)); }).catch(error => toast(error.message, "error")).finally(()=>setLoading(false));
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const districtOptions = useMemo(() => [...new Map([...districts].sort((a,b)=>(b.state==="Unmapped")-(a.state==="Unmapped")).map(row => [row.name.toUpperCase(), { value: row.name, label: `${row.name} · ${row.state}${row.state_code ? ` (${row.state_code})` : ""}${row.pincodes?.length ? ` · ${row.pincodes.join(", ")}` : ""}` }])).values()].sort((a,b)=>a.label.localeCompare(b.label)), [districts]);
+  const districtOptions = useMemo(() => [...new Map([...districts].sort((a,b)=>(b.state==="Unmapped")-(a.state==="Unmapped")).map(row => [row.name.toUpperCase(), { value: row.name, label: row.name }])).values()].sort((a,b)=>a.label.localeCompare(b.label)), [districts]);
   const routeRates = useMemo(() => rates
     .filter(rate => rate.from_district === from && rate.to_district === to)
     .sort((a, b) => Number(a.quantity_kg) - Number(b.quantity_kg)), [rates, from, to]);
