@@ -9,21 +9,21 @@ const priceKey = (type) => `${type}_price`;
 
 export default function SupplierGradePricing({ warehouse, initial, setRows, toast }) {
   const [rows, setLocal] = useState(initial);
-  const [masters, setMasters] = useState([]);
+  const [masters, setMasters] = useState({ categories: [], grades: [] });
   const [addingGrade, setAddingGrade] = useState(null);
   const [gradeChoice, setGradeChoice] = useState("");
-  const [categoryName, setCategoryName] = useState("");
+  const [categoryChoice, setCategoryChoice] = useState("");
   const [saving, setSaving] = useState(null);
-  const [creatingCategory, setCreatingCategory] = useState(false);
+  const [adding, setAdding] = useState(false);
 
   useEffect(() => setLocal(initial), [initial]);
   useEffect(() => {
-    api("/suppliers/grade-master").then(setMasters).catch((error) => toast(error.message, "error"));
+    api("/suppliers/catalogue-master").then(setMasters).catch((error) => toast(error.message, "error"));
   }, [toast]);
   useEffect(() => {
     setAddingGrade(null);
     setGradeChoice("");
-    setCategoryName("");
+    setCategoryChoice("");
   }, [warehouse.id]);
 
   async function reload() {
@@ -86,23 +86,32 @@ export default function SupplierGradePricing({ warehouse, initial, setRows, toas
     }
   }
 
-  async function addCategory(event) {
-    event.preventDefault();
-    const name = categoryName.trim();
-    if (!name) return toast("Enter a product category name.", "error");
-    setCreatingCategory(true);
+  async function addFirstGrade() {
+    if (!categoryChoice || !gradeChoice) return;
+    const categoryMaster = masters.categories.find((item) => String(item.value) === String(categoryChoice));
+    if (!categoryMaster) return toast("Select a category from Product Category Master.", "error");
+    setAdding(true);
     try {
-      await api(`/suppliers/warehouses/${warehouse.id}/categories`, {
+      let category = rows.find((row) => row.category_name === categoryMaster.label);
+      if (!category) {
+        category = await api(`/suppliers/warehouses/${warehouse.id}/categories`, {
+          method: "POST",
+          body: JSON.stringify({ name: categoryMaster.label }),
+        });
+      }
+      await api(`/suppliers/categories/${category.category_id || category.id}/grades`, {
         method: "POST",
-        body: JSON.stringify({ name }),
+        body: JSON.stringify({ master_grade_id: gradeChoice }),
       });
-      setCategoryName("");
+      setCategoryChoice("");
+      setGradeChoice("");
+      setAddingGrade(null);
       await reload();
-      toast("Product category added. You can now add grades to it.");
+      toast("Grade added.");
     } catch (error) {
       toast(error.message, "error");
     } finally {
-      setCreatingCategory(false);
+      setAdding(false);
     }
   }
 
@@ -120,29 +129,17 @@ export default function SupplierGradePricing({ warehouse, initial, setRows, toas
 
   return (
     <div>
-      <form onSubmit={addCategory} className="mb-5 rounded border bg-card p-4">
-        <div className="mb-2">
-          <b>Product Categories</b>
-          <p className="text-sm text-muted-foreground">Create a category for this warehouse first, then add grades from the Grade Master.</p>
-        </div>
-        <div className="flex flex-col gap-2 sm:flex-row">
-          <input
-            value={categoryName}
-            onChange={(event) => setCategoryName(event.target.value)}
-            maxLength={100}
-            placeholder="e.g. TMT Bar, Cement"
-            className="h-10 flex-1 rounded border px-3"
-          />
-          <button disabled={creatingCategory || !categoryName.trim()} className="rounded bg-primary px-4 text-white disabled:opacity-40">
-            {creatingCategory ? <LoaderCircle className="mr-2 inline w-4 animate-spin" /> : <Plus className="mr-1 inline w-4" />}
-            Add Category
-          </button>
-        </div>
-      </form>
-
       {categories.length === 0 && (
-        <div className="rounded border border-dashed p-8 text-center text-sm text-muted-foreground">
-          No product category is configured for this warehouse. Add a category above to enable the Add Grade option.
+        <div className="mb-5 rounded border border-dashed p-5">
+          <div className="flex items-center justify-between gap-3">
+            <div><b>No grades configured</b><p className="text-sm text-muted-foreground">Add the first grade for this warehouse from configured masters.</p></div>
+            <button type="button" onClick={() => setAddingGrade("first")} className="text-sm text-secondary"><Plus className="mr-1 inline w-4" />Add Grade</button>
+          </div>
+          {addingGrade === "first" && <div className="relative z-30 mt-4 grid gap-3 border-t pt-4 sm:grid-cols-[1fr_1fr_auto]">
+            <SelectField value={categoryChoice} onChange={setCategoryChoice} options={masters.categories} placeholder="Select product category…" searchPlaceholder="Search product category…" />
+            <SelectField value={gradeChoice} onChange={setGradeChoice} options={masters.grades} placeholder="Select grade…" searchPlaceholder="Search grade…" />
+            <button type="button" disabled={adding || !categoryChoice || !gradeChoice} onClick={addFirstGrade} className="rounded bg-primary px-4 text-white disabled:opacity-40">{adding && <LoaderCircle className="mr-2 inline w-4 animate-spin" />}Add Row</button>
+          </div>}
         </div>
       )}
 
@@ -160,7 +157,7 @@ export default function SupplierGradePricing({ warehouse, initial, setRows, toas
                 <SelectField
                   value={gradeChoice}
                   onChange={setGradeChoice}
-                  options={masters.filter((master) => !rows.some((row) => row.category_id === categoryId && String(row.master_grade_id) === String(master.value)))}
+                  options={masters.grades.filter((master) => !rows.some((row) => row.category_id === categoryId && String(row.master_grade_id) === String(master.value)))}
                   placeholder="Select grade from Settings…"
                   searchPlaceholder="Search grade…"
                 />
