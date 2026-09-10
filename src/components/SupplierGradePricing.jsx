@@ -15,6 +15,7 @@ export default function SupplierGradePricing({ warehouse, initial, setRows, toas
   const [categoryChoice, setCategoryChoice] = useState("");
   const [saving, setSaving] = useState(null);
   const [adding, setAdding] = useState(false);
+  const [bulkSaving, setBulkSaving] = useState(null);
 
   useEffect(() => setLocal(initial), [initial]);
   useEffect(() => {
@@ -68,6 +69,25 @@ export default function SupplierGradePricing({ warehouse, initial, setRows, toas
     }
     change(row.grade_id, "active_rate_type", type);
     save(row, { active_rate_type: type });
+  }
+
+  async function activateAll(categoryId, type) {
+    const categoryRows = rows.filter((row) => row.category_id === categoryId && row.grade_id);
+    const missing = categoryRows.filter((row) => row[priceKey(type)] === "" || row[priceKey(type)] == null);
+    if (missing.length) return toast(`${type[0].toUpperCase() + type.slice(1)} rate is blank for: ${missing.map((row) => row.grade_name).join(", ")}.`, "error");
+    setBulkSaving(`${categoryId}-${type}`);
+    try {
+      const result = await api(`/suppliers/categories/${categoryId}/active-rate`, {
+        method: "PUT",
+        body: JSON.stringify({ active_rate_type: type }),
+      });
+      await reload();
+      toast(result.message);
+    } catch (error) {
+      toast(error.message, "error");
+    } finally {
+      setBulkSaving(null);
+    }
   }
 
   async function addGrade() {
@@ -167,7 +187,7 @@ export default function SupplierGradePricing({ warehouse, initial, setRows, toas
           )}
           <div className="overflow-x-auto">
             <table className="w-full min-w-[1050px] text-sm">
-              <thead><tr>{["Grade", "Pure", "Prime", "Standard", "Market", "Remarks", "Status", "Actions"].map((label) => <th className="border p-2 text-left" key={label}>{label}</th>)}</tr></thead>
+              <thead><tr><th className="border p-2 text-left">Grade</th>{types.map((type) => {const categoryRows=rows.filter((row)=>row.category_id===categoryId&&row.grade_id),allSelected=categoryRows.length>0&&categoryRows.every((row)=>row.active_rate_type===type),busy=bulkSaving===`${categoryId}-${type}`;return <th className="border p-2 text-left" key={type}><label className="flex cursor-pointer items-center gap-2" title={`Set ${type} as active rate for all grades in ${name}`}><input type="radio" name={`all-rates-${categoryId}`} checked={allSelected} disabled={!!bulkSaving} onChange={()=>activateAll(categoryId,type)}/>{busy?<LoaderCircle className="h-4 w-4 animate-spin"/>:<span className="capitalize">{type}</span>}</label></th>})}<th className="border p-2 text-left">Remarks</th><th className="border p-2 text-left">Status</th><th className="border p-2 text-left">Actions</th></tr></thead>
               <tbody>
                 {rows.filter((row) => row.category_id === categoryId && row.grade_id).map((row) => (
                   <tr key={row.grade_id}>
