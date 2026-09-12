@@ -66,8 +66,8 @@ export default function FreightEngine({ lanes = [] }) {
       <DistrictField label="To" value={to} setValue={changeTo} options={districtOptions.filter(option => option.value !== from)} placeholder={from ? "Select To district" : "Select From first"} disabled={!from} loading={loading} />
       <label>
         <span className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-muted-foreground">Qty</span>
-        <select value={quantity} onChange={event => setQuantity(event.target.value)} disabled={!to||loading} className="h-11 w-full rounded-lg border bg-white px-3 disabled:cursor-not-allowed disabled:opacity-50">
-          <option value="">All available quantities</option>
+        <select value={quantity} onChange={event => setQuantity(event.target.value)} disabled={!to||loading||!routeRates.length} className="h-11 w-full rounded-lg border bg-white px-3 disabled:cursor-not-allowed disabled:opacity-50">
+          <option value="">{from&&to&&!routeRates.length?"No available rates":"All available quantities"}</option>
           {routeRates.map(rate => <option key={rate.id} value={rate.quantity_kg}>{quantityLabel(rate.quantity_kg)}</option>)}
         </select>
       </label>
@@ -78,7 +78,7 @@ export default function FreightEngine({ lanes = [] }) {
         <h3 className="font-semibold">Freight Matrix</h3>
         <p className="text-sm text-muted-foreground">{fromDistrict?.name} → {toDistrict?.name} · rates maintained in the Base Freight Master</p>
       </div>
-      {historyLoading ? <LoadingPanel text="Loading freight history…"/> : routeRates.length ? <div className="overflow-x-auto">
+      {!routeRates.length ? <div className="bg-amber-50 p-10 text-center"><p className="font-semibold text-amber-900">No Available Rates</p><p className="mt-1 text-sm text-amber-800">No freight rate is available in Freight Rates for the selected From and To districts.</p><Link to="/logistics?tab=freight-rates" className="mt-3 inline-flex items-center gap-1 text-sm font-medium text-amber-900 underline underline-offset-4">Open Freight Rates <ExternalLink className="h-3.5 w-3.5"/></Link></div> : historyLoading ? <LoadingPanel text="Loading freight history…"/> : <div className="overflow-x-auto">
         <table className="w-full min-w-[760px] text-sm">
           <thead className="bg-card"><tr>{["Quantity", "Base Freight", "Total Freight", "Last Price", "Weighted Average"].map(label => <th key={label} className="border-b p-3 text-left">{label}</th>)}</tr></thead>
           <tbody>{routeRates.map(rate => {
@@ -95,7 +95,7 @@ export default function FreightEngine({ lanes = [] }) {
             </tr>;
           })}</tbody>
         </table>
-      </div> : <p className="p-10 text-center text-muted-foreground">No base freight rate is available for this route.</p>}
+      </div>}
     </div> : loading ? <LoadingPanel text="Loading districts and freight rates…"/> : <div className="mt-5 rounded-xl border border-dashed p-10 text-center text-sm text-muted-foreground">Select From and To districts to view the freight matrix.</div>}
   </div>;
 }
