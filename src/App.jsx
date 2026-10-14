@@ -16,6 +16,7 @@ import ResetPassword from "./pages/ResetPassword";
 import EmailNotifications from "./pages/EmailNotifications";
 import WebsiteProducts from "./pages/WebsiteProducts";
 import FreightBulkUpload from "./pages/FreightBulkUpload";
+import ModalClickAway from "./components/ModalClickAway";
 
 const secure = (page, module) => <ProtectedRoute module={module}>{page}</ProtectedRoute>;
 const hasStoredSession = () => Boolean(localStorage.getItem("token") || localStorage.getItem("refreshToken"));
@@ -27,6 +28,7 @@ function HomeRedirect() {
 export default function App() {
   return (
     <BrowserRouter>
+      <ModalClickAway />
       <Routes>
         <Route path="/" element={<HomeRedirect />} />
         <Route path="/login" element={<Login />} />

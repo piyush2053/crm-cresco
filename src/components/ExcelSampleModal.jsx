@@ -22,6 +22,7 @@ export default function ExcelSampleModal({ title, description, headers, rows, ru
       role="dialog"
       aria-modal="true"
       aria-labelledby="excel-sample-title"
+      data-click-away-handled="true"
       onMouseDown={(event) => event.target === event.currentTarget && onClose()}
     >
       <section className="flex max-h-[94dvh] w-full max-w-7xl flex-col overflow-hidden rounded-2xl border border-white/70 bg-white shadow-2xl">
